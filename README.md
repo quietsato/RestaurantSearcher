@@ -1,2 +1,3 @@
 # RestaurantSearcher
-学校の課題で作るホットペッパーAPIを利用したレストラン検索アプリケーション
+---
+Restaurant search application using Hot Pepper API
