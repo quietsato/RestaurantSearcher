@@ -1,4 +1,8 @@
 import attributes as att, keys, urls
+import io, PIL.Image
+import tkinter as tk
+import requests as rq
+import webbrowser as wb
 
 print('Please run main.py')
 exit(0)
@@ -80,9 +84,11 @@ class Result(Window):
         pass
 
     def onPageClicked(self, url):
+        # TODO webbrowserで受け取ったurlを開く
         pass
 
     def onGSearchClicked(self, name):
+        # TODO webbrowserで生成したurlを開く
         pass
 
     def onClose(self):
