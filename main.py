@@ -1,0 +1,3 @@
+import window
+
+print('Hello')
