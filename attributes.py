@@ -1,10 +1,13 @@
+print('Please run main.py')
+
+
 class Attributes():
     pass
 
 
 class Condition(Attributes):
     def __init__(self):
-        # TODO set default value
+        # TODO 既定値を設定
         pass
 
 
@@ -15,5 +18,5 @@ class Data(Attributes):
     imageUrl = ''
 
     def __init__(self, json):
-        # TODO set restaurant data from json
+        # TODO 店舗データをjsonから設定
         pass
