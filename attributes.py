@@ -14,6 +14,6 @@ class Data(Attributes):
     url = ''
     imageUrl = ''
 
-    def __init___(self, json):
+    def __init__(self, json):
         # TODO set restaurant data from json
         pass
