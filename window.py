@@ -5,6 +5,7 @@ import tkinter.messagebox as tkmsg
 import requests as rq
 import webbrowser as wb
 
+
 # print('Please run main.py')
 # exit(0)
 
@@ -40,15 +41,15 @@ class Search(Window):
 
     def getLatLonByCity(self, cityName):
         res = rq.get(urls.g_apiurl, {'address': cityName, 'key': keys.g_KEY}).json()
-        if res['status'] == 'OK':
-            location = [
-                str(res['results'][0]['geometry']['location']['lat']),
-                str(res['results'][0]['geometry']['location']['lng'])
-            ]
-        else:
+        if res['status'] != 'OK':
             tkmsg.showinfo('見つかりませんでした',
                            '異なるデータで再度お試しください')
             return 'NOT FOUND'
+
+        location = [
+            str(res['results'][0]['geometry']['location']['lat']),
+            str(res['results'][0]['geometry']['location']['lng'])
+        ]
         return location
 
     def getRDataByLatLon(self, location):
@@ -61,17 +62,21 @@ class Option(Window):
     # THINK ABOUT WHERE BY ALSO GOOD!!!
 
     def __init__(self, caller, cond):
+        self.cond = cond
         # TODO チェックボックスの状態をcondをもとに指定
         pass
 
     def onApplyClicked(self, caller, cond):
         # TODO チェックボックスをもとにcondのフィールドを指定
-        if (caller is Search):
+        if caller is Search:
             # TODO condをcallerにreturn
             pass
-        elif (caller is Result):
+        elif caller is Result:
             # TODO callerを閉じてResultを再生成
             pass
+        pass
+
+    def onCancelClicked(self):
         pass
 
     def onClose(self):
