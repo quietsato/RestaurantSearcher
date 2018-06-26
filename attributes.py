@@ -1,7 +1,16 @@
 print('Please run main.py')
 
 
-class Attributes():
+class Attributes:
+    genre_name = ''
+    close_day = ''
+    wifi = ''
+    free_drink = ''
+    free_food = ''
+    private_room = ''
+    non_smoking = ''
+    charter = ''
+    parking = ''
     pass
 
 
@@ -16,6 +25,12 @@ class Data(Attributes):
     address = ''
     url = ''
     imageUrl = ''
+    other_data = {
+        'catch': '',
+        'open': '',
+        'course': '',
+        'midnight': ''
+    }
 
     def __init__(self, json):
         # TODO 店舗データをjsonから設定
