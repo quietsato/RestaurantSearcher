@@ -15,10 +15,8 @@ class Attributes:
 
 
 class Condition(Attributes):
-    def __init__(self):
-        # TODO 既定値を設定
-        pass
-
+    # このクラスはAttributesのフィールドをそのまま持っている
+    pass
 
 class Data(Attributes):
     name = ''
