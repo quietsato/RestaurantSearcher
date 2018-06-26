@@ -1,11 +1,12 @@
 import attributes as att, keys, urls
 import io, PIL.Image
 import tkinter as tk
+import tkinter.messagebox as tkmsg
 import requests as rq
 import webbrowser as wb
 
-print('Please run main.py')
-exit(0)
+# print('Please run main.py')
+# exit(0)
 
 
 class Window:
@@ -25,6 +26,8 @@ class Search(Window):
             params = self.getLatLonByCity(params[0])
             pass
         result = self.getRDataByLatLon(params)
+        if result == 'NOT FOUND':
+            return
         r = Result(result, cond)
 
     def onOptionClicked(self, cond):
@@ -36,8 +39,16 @@ class Search(Window):
         super().onClose()
 
     def getLatLonByCity(self, cityName):
-        # TODO Geocoding APIを使用する
-        location = [0, 0]
+        res = rq.get(urls.g_apiurl, {'address': cityName, 'key': keys.g_KEY}).json()
+        if res['status'] == 'OK':
+            location = [
+                str(res['results'][0]['geometry']['location']['lat']),
+                str(res['results'][0]['geometry']['location']['lng'])
+            ]
+        else:
+            tkmsg.showinfo('見つかりませんでした',
+                           '異なるデータで再度お試しください')
+            return 'NOT FOUND'
         return location
 
     def getRDataByLatLon(self, location):
