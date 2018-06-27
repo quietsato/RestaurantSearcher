@@ -4,4 +4,4 @@
 
 h_apiurl = 'http://webservice.recruit.co.jp/hotpepper/gourmet/v1'
 g_apiurl = 'https://maps.googleapis.com/maps/api/geocode/json'
-g_search = 'https://www.google.co.jp/search'
+g_search = 'https://www.google.co.jp/search?q='
