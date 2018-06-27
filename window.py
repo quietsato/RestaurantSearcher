@@ -24,11 +24,10 @@ class Search(Window):
 
     def onSearchClicked(self, isCityName, cond, params):
         if (isCityName):
-            params = self.getLatLonByCity(params[0])
-            pass
-        result = self.getRDataByLatLon(params)
-        if result == 'NOT FOUND':
-            return
+            params = self.getLatLngByCity(params[0])
+            if params  == 'NOT FOUND':
+                return
+        result = self.getRDataByLatLng(params)
         r = Result(result, cond)
 
     def onOptionClicked(self, cond):
@@ -39,8 +38,10 @@ class Search(Window):
         # TODO ダイアログを生成
         super().onClose()
 
-    def getLatLonByCity(self, cityName):
-        res = rq.get(urls.g_apiurl, {'address': cityName, 'key': keys.g_KEY}).json()
+    def getLatLngByCity(self, cityName):
+        res = rq.get(url=urls.g_apiurl, params={
+            'address': cityName, 'key': keys.g_KEY
+        }).json()
         if res['status'] != 'OK':
             tkmsg.showinfo('見つかりませんでした',
                            '異なるデータで再度お試しください')
@@ -52,9 +53,19 @@ class Search(Window):
         ]
         return location
 
-    def getRDataByLatLon(self, location):
-        # TODO それぞれのレストランのデータをList<Data>としてreturn
-        d = att.Data(json={'key': 'value'})
+    def getRDataByLatLng(self, location):
+        res = rq.get(url=urls.h_apiurl, params={
+            'key': keys.h_KEY,
+            'lat': location[0],
+            'lng': location[1],
+            'format': 'json',
+            'count': '100'
+        }).json()
+        d = []
+        for num in range(1, int(res['results']['results_returned'])):
+            d[num] = att.Data(
+                res['results']['shop'][num]
+            )
         return d
 
 
@@ -100,12 +111,11 @@ class Result(Window):
         pass
 
     def onPageClicked(self, url):
-        # TODO webbrowserで受け取ったurlを開く
+        wb.open(url=url)
         pass
 
     def onGSearchClicked(self, name):
-        # TODO webbrowserで生成したurlを開く
-        pass
+        wb.open(url=urls.g_search + name)
 
     def onClose(self):
         pass
