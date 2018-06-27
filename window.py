@@ -9,6 +9,7 @@ import webbrowser as wb
 # print('Please run main.py')
 # exit(0)
 
+# tkinterのルートウィンドウの変数名は"root"とする
 
 class Window:
     size = ''
@@ -25,10 +26,11 @@ class Search(Window):
     def onSearchClicked(self, isCityName, cond, params):
         if (isCityName):
             params = self.getLatLngByCity(params[0])
-            if params  == 'NOT FOUND':
+            if params == 'NOT FOUND':
                 return
         result = self.getRDataByLatLng(params)
-        r = Result(result, cond)
+        # r = Result(result, cond)
+        return result
 
     def onOptionClicked(self, cond):
         o = Option(caller=self, cond=cond)
@@ -61,18 +63,18 @@ class Search(Window):
             'format': 'json',
             'count': '100'
         }).json()
-        d = []
-        for num in range(1, int(res['results']['results_returned'])):
-            d[num] = att.Data(
-                res['results']['shop'][num]
-            )
-        return d
+        r_data = [
+            att.Data(shop)
+            for shop in res['results']['shop']
+        ]
+        return r_data
 
 
 class Option(Window):
     # THINK ABOUT WHERE BY ALSO GOOD!!!
 
     def __init__(self, caller, cond):
+        self.root = tk.Tk()
         self.cond = cond
         # TODO チェックボックスの状態をcondをもとに指定
         pass
@@ -80,23 +82,27 @@ class Option(Window):
     def onApplyClicked(self, caller, cond):
         # TODO チェックボックスをもとにcondのフィールドを指定
         if caller is Search:
-            # TODO condをcallerにreturn
-            pass
+            caller.cond = cond
         elif caller is Result:
             # TODO callerを閉じてResultを再生成
-            pass
-        pass
+            r = caller.result
+            caller.root.destroy()
+            Result(result=r, cond=cond)
+        self.root.destroy()
 
     def onCancelClicked(self):
         pass
 
     def onClose(self):
-        # TODO 何もいじっていないcondをcallerにreturn
-        pass
+        tkmsg.showwarning(title='確認',
+                          message='OKを押すと変更した内容は失われます')
+        self.root.destroy()
 
 
 class Result(Window):
     def __init__(self, result, cond):
+        self.result = result
+        self.cond = cond
         # TODO condをもとにresult内のデータを絞り込む
         # TODO ListBoxの中身を絞り込まれたデータをもとに作成
         pass
