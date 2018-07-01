@@ -1,4 +1,5 @@
-import attributes as att, keys, urls
+import keys, urls
+from attributes import *
 import io, PIL.Image
 import tkinter as tk
 import tkinter.messagebox as tkmsg
@@ -33,8 +34,7 @@ class Search(Window):
         return result
 
     def onOptionClicked(self, cond):
-        o = Option(caller=self, cond=cond)
-        return cond
+        Option(caller=self, cond=cond)
 
     def onClose(self):
         # TODO ダイアログを生成
@@ -64,7 +64,7 @@ class Search(Window):
             'count': '100'
         }).json()
         r_data = [
-            att.Data(shop)
+            Data(shop)
             for shop in res['results']['shop']
         ]
         return r_data
