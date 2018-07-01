@@ -2,6 +2,7 @@ import keys, urls
 from attributes import *
 import io, PIL.Image
 import tkinter as tk
+from tkinter import ttk
 import tkinter.messagebox as tkmsg
 import requests as rq
 import webbrowser as wb
@@ -22,11 +23,21 @@ class Window:
 class Search(Window):
     def __init__(self):
         self.size = ''
-        isCityName = False
+        self.isCityName = False
         self.makeWindow(root=tk.Tk())
 
     def makeWindow(self, root):
         # TODO ウィンドウの中身をここに記述
+        label1 = ttk.Label(root,
+                           text='検索条件')
+        lButton = ttk.Radiobutton(root,
+                                  text='緯度・経度',
+                                  value=False,
+                                  variable=self.isCityName)
+        cButton = ttk.Radiobutton(root,
+                                  text='都市名・建物名',
+                                  value=True,
+                                  variable=self.isCityName)
         root.mainloop()
 
     def onSearchClicked(self, isCityName, cond, params):
