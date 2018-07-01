@@ -23,6 +23,11 @@ class Search(Window):
     def __init__(self):
         self.size = ''
         isCityName = False
+        self.makeWindow(root=tk.Tk())
+
+    def makeWindow(self, root):
+        # TODO ウィンドウの中身をここに記述
+        root.mainloop()
 
     def onSearchClicked(self, isCityName, cond, params):
         if (isCityName):
@@ -37,8 +42,11 @@ class Search(Window):
         Option(caller=self, cond=cond)
 
     def onClose(self):
-        # TODO ダイアログを生成
-        super().onClose()
+        tkmsg.askokcancel(
+            title='確認',
+            message='終了しますか？'
+        )
+        self.root.destroy()
 
     def getLatLngByCity(self, cityName):
         res = rq.get(url=urls.g_apiurl, params={
@@ -76,8 +84,13 @@ class Option(Window):
     def __init__(self, caller, cond):
         self.root = tk.Tk()
         self.cond = cond
+        self.makeWindow(root=tk.Tk())
         # TODO チェックボックスの状態をcondをもとに指定
         pass
+
+    def makeWindow(self, root):
+        # TODO チェックボックスの状態をcondをもとに指定
+        root.mainloop()
 
     def onApplyClicked(self, caller, cond):
         # TODO チェックボックスをもとにcondのフィールドを指定
@@ -103,9 +116,12 @@ class Result(Window):
     def __init__(self, result, cond):
         self.result = result
         self.cond = cond
+        self.makeWindow(root=tk.Tk())
+
+    def makeWindow(self, root):
         # TODO condをもとにresult内のデータを絞り込む
         # TODO ListBoxの中身を絞り込まれたデータをもとに作成
-        pass
+        root.mainloop()
 
     def onListItemClicked(self, itemNum):
         # TODO 表示する値を設定
