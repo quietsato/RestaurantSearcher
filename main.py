@@ -1,4 +1,6 @@
 import window
+
+
 # import sys
 #
 # args = sys.argv
@@ -12,5 +14,6 @@ import window
 
 def startNormal():
     window.Search()
+
 
 startNormal()
