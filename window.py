@@ -1,7 +1,7 @@
 import keys, urls
 from attributes import *
 import io, PIL.Image
-import tkinter as tk
+from tkinter import *
 from tkinter import ttk
 import tkinter.messagebox as tkmsg
 import requests as rq
@@ -22,22 +22,46 @@ class Window:
 
 class Search(Window):
     def __init__(self):
-        self.size = ''
+        self.size = '300x200'
         self.isCityName = False
-        self.makeWindow(root=tk.Tk())
+        self.makeWindow(root=Tk())
 
     def makeWindow(self, root):
         # TODO ウィンドウの中身をここに記述
+
+        root.geometry(self.size)
+        root.columnconfigure(1, weight=1)
+        root.columnconfigure(2, weight=1)
+        root.rowconfigure(3, weight=1)
+
         label1 = ttk.Label(root,
-                           text='検索条件')
+                           text='検索条件：').grid(column=0, row=0, sticky=W)
+        oButton = ttk.Button(root,
+                             text='詳細検索').grid(column=2, row=0, sticky=E)
+
         lButton = ttk.Radiobutton(root,
                                   text='緯度・経度',
                                   value=False,
-                                  variable=self.isCityName)
+                                  variable=self.isCityName).grid(column=0, columnspan=2, row=1, sticky=W)
+
         cButton = ttk.Radiobutton(root,
                                   text='都市名・建物名',
                                   value=True,
-                                  variable=self.isCityName)
+                                  variable=self.isCityName).grid(column=0, columnspan=2, row=2, sticky=W)
+
+        self.locationFrame = ttk.Frame(root
+                                  ).grid(column=0, row=3, columnspan=3, rowspan=3)
+        latLabel = ttk.Label(self.locationFrame,
+                             text='緯度').grid(row=4, padx =5, pady=5, sticky=W)
+        latEntry = ttk.Entry(self.locationFrame,
+                             ).grid(column=1,columnspan=2, row=4,padx=5, pady=5, sticky=W+E)
+        lonLabel = ttk.Label(self.locationFrame,
+                             text='経度').grid(row=5, sticky=W, padx=5, pady=5)
+        lonEntry = ttk.Entry(self.locationFrame,
+                             ).grid(column=1, columnspan=2, row=5, padx=5, pady=5, sticky=W+E)
+        sButton = ttk.Button(self.locationFrame,
+                             text='検索する').grid(column=2, row=6, padx=5, pady=5,sticky=E)
+
         root.mainloop()
 
     def onSearchClicked(self, isCityName, cond, params):
@@ -93,9 +117,9 @@ class Option(Window):
     # THINK ABOUT WHERE BY ALSO GOOD!!!
 
     def __init__(self, caller, cond):
-        self.root = tk.Tk()
+        self.root = Tk()
         self.cond = cond
-        self.makeWindow(root=tk.Tk())
+        self.makeWindow(root=Tk())
         # TODO チェックボックスの状態をcondをもとに指定
         pass
 
@@ -127,7 +151,7 @@ class Result(Window):
     def __init__(self, result, cond):
         self.result = result
         self.cond = cond
-        self.makeWindow(root=tk.Tk())
+        self.makeWindow(root=Tk())
 
     def makeWindow(self, root):
         # TODO condをもとにresult内のデータを絞り込む
