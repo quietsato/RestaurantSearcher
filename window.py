@@ -22,7 +22,7 @@ class Window:
 
 class Search(Window):
     def __init__(self):
-        self.size = '300x200'
+        self.size = '300x250'
         self.isCityName = False
         self.makeWindow(root=Tk())
 
@@ -32,35 +32,42 @@ class Search(Window):
         root.geometry(self.size)
         root.columnconfigure(1, weight=1)
         root.columnconfigure(2, weight=1)
-        root.rowconfigure(3, weight=1)
+        root.rowconfigure(6, weight=1)
+
+        # TODO ラジオボタンの初期値を設定する
 
         label1 = ttk.Label(root,
-                           text='検索条件：').grid(column=0, row=0, sticky=W)
+                           text='検索条件：').grid(column=0, row=0, padx=5, pady=5, sticky=W)
         oButton = ttk.Button(root,
-                             text='詳細検索').grid(column=2, row=0, sticky=E)
+                             text='詳細検索').grid(column=2, row=0, padx=5, pady=5, sticky=E)
 
         lButton = ttk.Radiobutton(root,
                                   text='緯度・経度',
                                   value=False,
-                                  variable=self.isCityName).grid(column=0, columnspan=2, row=1, sticky=W)
+                                  variable=self.isCityName).grid(column=0, columnspan=2, row=1,
+                                                                 padx=10, pady=5, sticky=W)
 
         cButton = ttk.Radiobutton(root,
                                   text='都市名・建物名',
                                   value=True,
-                                  variable=self.isCityName).grid(column=0, columnspan=2, row=2, sticky=W)
+                                  variable=self.isCityName).grid(column=0, columnspan=2, row=2, padx=10, sticky=W)
 
-        self.locationFrame = ttk.Frame(root
-                                  ).grid(column=0, row=3, columnspan=3, rowspan=3)
-        latLabel = ttk.Label(self.locationFrame,
-                             text='緯度').grid(row=4, padx =5, pady=5, sticky=W)
-        latEntry = ttk.Entry(self.locationFrame,
-                             ).grid(column=1,columnspan=2, row=4,padx=5, pady=5, sticky=W+E)
-        lonLabel = ttk.Label(self.locationFrame,
-                             text='経度').grid(row=5, sticky=W, padx=5, pady=5)
-        lonEntry = ttk.Entry(self.locationFrame,
-                             ).grid(column=1, columnspan=2, row=5, padx=5, pady=5, sticky=W+E)
-        sButton = ttk.Button(self.locationFrame,
-                             text='検索する').grid(column=2, row=6, padx=5, pady=5,sticky=E)
+        latLabel = ttk.Label(root,
+                             text='緯度').grid(row=4, padx=5, pady=5, sticky=E)
+        self.latEntry = ttk.Entry(root
+                             ).grid(column=1, columnspan=2, row=4, padx=5, pady=5, sticky=W + E)
+        lngLabel = ttk.Label(root,
+                             text='経度').grid(row=5, padx=5, pady=5, sticky=E)
+        self.lngEntry = ttk.Entry(root,
+                                  ).grid(column=1, columnspan=2, row=5, padx=5, pady=5, sticky=W + E)
+
+        cityLabel = ttk.Label(root,
+                              text='都市・建物').grid(row=7, padx=5, pady=5, sticky=E)
+        self.cityEntry = ttk.Entry(root
+                                   ).grid(column=1, columnspan=2, row=7, padx=5, pady=5, sticky=W + E)
+
+        sButton = ttk.Button(root,
+                             text='検索する').grid(column=2, row=8, padx=5, pady=5, sticky=E)
 
         root.mainloop()
 
