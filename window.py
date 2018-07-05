@@ -1,6 +1,6 @@
 import keys, urls
 from attributes import *
-import io, PIL.Image
+import io, PIL.Image, re
 from tkinter import *
 from tkinter import ttk
 import tkinter.messagebox as tkmsg
@@ -15,6 +15,7 @@ import webbrowser as wb
 
 class Window:
     size = ''
+    title = ''
 
     def onClose(self):
         pass
@@ -23,65 +24,109 @@ class Window:
 class Search(Window):
     def __init__(self):
         self.size = '300x250'
-        self.isCityName = False
-        self.makeWindow(root=Tk())
+        self.title = '検索'
+        self.root = Tk()
+        self.cond = Condition()
+        self.makeWindow(root=self.root)
 
     def makeWindow(self, root):
         # TODO ウィンドウの中身をここに記述
 
+        root.title(self.title)
         root.geometry(self.size)
         root.columnconfigure(1, weight=1)
         root.columnconfigure(2, weight=1)
         root.rowconfigure(8, weight=1)
 
-        # TODO ラジオボタンの初期値を設定する
-
+        # ウィジェットの定義をまとめて行う
         label1 = ttk.Label(root,
-                           text='検索条件：').grid(column=0, row=0, padx=5, pady=5, sticky=W)
+                           text='検索条件：')
         oButton = ttk.Button(root,
-                             text='詳細検索').grid(column=2, row=0, padx=5, pady=5, sticky=E)
+                             text='詳細検索')
+        radio_value = BooleanVar()
 
         lButton = ttk.Radiobutton(root,
                                   text='緯度・経度',
+                                  variable=radio_value,
                                   value=False,
-                                  variable=self.isCityName).grid(column=0, columnspan=2, row=1,
-                                                                 padx=10, pady=5, sticky=W)
-
+                                  )
         cButton = ttk.Radiobutton(root,
                                   text='都市名・建物名',
+                                  variable=radio_value,
                                   value=True,
-                                  variable=self.isCityName).grid(column=0, columnspan=2, row=2, padx=10, sticky=W)
-
-        latLabel = ttk.Label(root,
-                             text='緯度').grid(row=4, padx=5, pady=5, sticky=E)
-        self.latEntry = ttk.Entry(root
-                             ).grid(column=1, columnspan=2, row=4, padx=5, pady=5, sticky=W + E)
-        lngLabel = ttk.Label(root,
-                             text='経度').grid(row=5, padx=5, pady=5, sticky=E)
-        self.lngEntry = ttk.Entry(root,
-                                  ).grid(column=1, columnspan=2, row=5, padx=5, pady=5, sticky=W + E)
-
-        cityLabel = ttk.Label(root,
-                              text='都市・建物').grid(row=7, padx=5, pady=5, sticky=E)
-        self.cityEntry = ttk.Entry(root
-                                   ).grid(column=1, columnspan=2, row=7, padx=5, pady=5, sticky=W + E)
-
+                                  )
+        entryLabel = {
+            'lat': ttk.Label(root, text='緯度'),
+            'lng': ttk.Label(root, text='経度'),
+            'city': ttk.Label(root, text='都市・建物')
+        }
+        entry = {
+            'lat': ttk.Entry(root),
+            'lng': ttk.Entry(root),
+            'city': ttk.Entry(root)
+        }
         sButton = ttk.Button(root,
-                             text='検索する').grid(column=2, row=8, padx=5, pady=5, sticky=E + S)
+                             text='検索する')
 
+        # ウィジェットの配置
+        label1.grid(column=0, row=0, padx=5, pady=5, sticky=W)
+        oButton.grid(column=2, row=0, padx=5, pady=5, sticky=E)
+
+        lButton.grid(column=0, columnspan=2, row=1, padx=10, pady=5, sticky=W)
+
+        cButton.grid(column=0, columnspan=2, row=2, padx=10, sticky=W)
+
+        entryLabel['lat'].grid(row=4, padx=5, pady=5, sticky=E)
+        entry['lat'].grid(column=1, columnspan=2, row=4, padx=5, pady=5, sticky=W + E)
+
+        entryLabel['lng'].grid(row=5, padx=5, pady=5, sticky=E)
+        entry['lng'].grid(column=1, columnspan=2, row=5, padx=5, pady=5, sticky=W + E)
+
+        entryLabel['city'].grid(row=7, padx=5, pady=5, sticky=E)
+        entry['city'].grid(column=1, columnspan=2, row=7, padx=5, pady=5, sticky=W + E)
+
+        sButton.grid(column=2, row=8, padx=5, pady=5, sticky=E + S)
+
+        # ウィジェットのイベントバインディング
+        sButton.configure(command=
+                          lambda: self.onSearchClicked(radio_value.get(), self.cond, entry))
+
+        # rootの表示続行処理
         root.mainloop()
-
-    def onSearchClicked(self, isCityName, cond, params):
-        if (isCityName):
-            params = self.getLatLngByCity(params[0])
-            if params == 'NOT FOUND':
-                return
-        result = self.getRDataByLatLng(params)
-        # r = Result(result, cond)
-        return result
 
     def onOptionClicked(self, cond):
         Option(caller=self, cond=cond)
+
+    def onSearchClicked(self, isCityName, cond, entry):
+        print('ここ来たよ')
+        if (isCityName):
+            print('都市調べるよ')
+            print(entry['city'].get())
+            params = self.getLatLngByCity(entry['city'].get())
+            if params == 'NOT FOUND':
+                return
+        else:
+            pattern = r'^([1-9]\d*|0)(\.\d+)?$'
+            lat = re.match(pattern, entry['lat'].get())
+            lng = re.match(pattern, entry['lng'].get())
+            if (lat is None or lng is None):
+                tkmsg.showwarning(
+                    title='入力値エラー',
+                    message='値は整数または小数で入力してください'
+                )
+                return
+            params = [lat.string, lng.string]
+
+        result = self.getRDataByLatLng(params)
+        if result is None:
+            tkmsg.showinfo(
+                title='検索結果',
+                message=
+                '検索地周辺の検索結果は0件でした\n異なる地点でお試しください'
+            )
+            return
+        r = Result(result, cond)
+        return result
 
     def onClose(self):
         tkmsg.askokcancel(
@@ -103,9 +148,11 @@ class Search(Window):
             str(res['results'][0]['geometry']['location']['lat']),
             str(res['results'][0]['geometry']['location']['lng'])
         ]
+        print(location)
         return location
 
     def getRDataByLatLng(self, location):
+        print(location)
         res = rq.get(url=urls.h_apiurl, params={
             'key': keys.h_KEY,
             'lat': location[0],
@@ -113,10 +160,16 @@ class Search(Window):
             'format': 'json',
             'count': '100'
         }).json()
+
+        print(res['results'])
+        if res['results']['results_available'] == 0:
+            return None
+
         r_data = [
             Data(shop)
             for shop in res['results']['shop']
         ]
+
         return r_data
 
 
