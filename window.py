@@ -32,7 +32,7 @@ class Search(Window):
         root.geometry(self.size)
         root.columnconfigure(1, weight=1)
         root.columnconfigure(2, weight=1)
-        root.rowconfigure(6, weight=1)
+        root.rowconfigure(8, weight=1)
 
         # TODO ラジオボタンの初期値を設定する
 
@@ -67,7 +67,7 @@ class Search(Window):
                                    ).grid(column=1, columnspan=2, row=7, padx=5, pady=5, sticky=W + E)
 
         sButton = ttk.Button(root,
-                             text='検索する').grid(column=2, row=8, padx=5, pady=5, sticky=E)
+                             text='検索する').grid(column=2, row=8, padx=5, pady=5, sticky=E + S)
 
         root.mainloop()
 
