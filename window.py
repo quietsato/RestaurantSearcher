@@ -30,7 +30,6 @@ class Search(Window):
         self.makeWindow(root=self.root)
 
     def makeWindow(self, root):
-        # TODO ウィンドウの中身をここに記述
 
         root.title(self.title)
         root.geometry(self.size)
@@ -184,6 +183,9 @@ class Option(Window):
         pass
 
     def makeWindow(self, root):
+        root.title(self.title)
+        root.geometry(self.size)
+
         # ウィジェットの定義
         label1 = ttk.Label(root, text='検索項目')
         label2 = ttk.Label(root, text='条件')
@@ -227,15 +229,21 @@ class Option(Window):
             combo.append(c)
         # endregion
 
-        label1.grid(column=0, columnspan=2, row=0)
-        label2.grid(column=2, columnspan=2, row=0)
+        label1.grid(column=0, columnspan=2, row=0, padx=5, pady=5)
+        label2.grid(column=2, columnspan=2, row=0, padx=5, pady=5)
 
         for count in range(len(label_text)):
-            label[count].grid(column=0, columnspan=2, row=count + 1, sticky=E)
-            combo[count].grid(column=2, columnspan=2, row=count + 1, sticky=W)
+            label[count].grid(column=0, columnspan=2, row=count + 1, padx=10, pady=5, sticky=E)
+            combo[count].grid(column=2, columnspan=2, row=count + 1, padx=10, pady=5, sticky=W)
 
-        cancel.grid(column=2, row=len(label_text) + 1, sticky=S + E)
-        apply.grid(column=3, row=len(label_text) + 1, sticky=S + E)
+        cancel.grid(column=2, row=len(label_text) + 1, padx=5, pady=5, sticky=S + E)
+        apply.grid(column=3, row=len(label_text) + 1, padx=5, pady=5, sticky=S + E)
+
+        # ウィジェットの伸縮の設定
+        root.columnconfigure(2, weight=1)
+        root.columnconfigure(3, weight=1)
+        for row in range(len(label_text) + 2):
+            root.rowconfigure(row, weight=1)
 
         root.mainloop()
 
