@@ -183,7 +183,7 @@ class Option(Window):
         self.makeWindow(root=self.root)
         pass
 
-    def makeWindow(self, root, cond):
+    def makeWindow(self, root):
         # ウィジェットの定義
         label1 = ttk.Label(root, text='検索項目')
         label2 = ttk.Label(root, text='条件')
@@ -196,12 +196,11 @@ class Option(Window):
             ttk.Label(root, text=t) for t in label_text
         ]
         combo = []  # コンボボックスが実際に格納されるリスト
-        button = [
-            ttk.Button(root, text='キャンセル',
-                       command=lambda: self.onCancelClicked()),
-            ttk.Button(root, text='適用',
-                       command=lambda: self.onApplyClicked(caller=self.caller, cond=cond))
-        ]
+
+        cancel = ttk.Button(root, text='キャンセル',
+                            command=lambda: self.onCancelClicked())
+        apply = ttk.Button(root, text='適用',
+                           command=lambda: self.onApplyClicked(caller=self.caller, cond=cond))
 
         # region コンボボックスの定義
         combo_keys = [
@@ -222,7 +221,7 @@ class Option(Window):
         for num in range(len(combo_keys)):
             c = ttk.Combobox(root, state='readonly')
             c['values'] = combo_values[num]
-            current_value = cond.data[combo_keys[num]]
+            current_value = self.cond.data[combo_keys[num]]
             # コンボボックスの初期値のインデックスをcondの値から設定
             c.current(combo_values[num].index(current_value))
             combo.append(c)
@@ -231,11 +230,12 @@ class Option(Window):
         label1.grid(column=0, columnspan=2, row=0)
         label2.grid(column=2, columnspan=2, row=0)
 
-        for row in range(1, len(label_text) + 1):
-            label[row].grid(column=0, columnspan=2, row=row, anchor=E)
-            combo[row].grid(column=2, columnspan=2, row=row, anchor=W)
+        for count in range(len(label_text)):
+            label[count].grid(column=0, columnspan=2, row=count + 1, sticky=E)
+            combo[count].grid(column=2, columnspan=2, row=count + 1, sticky=W)
 
-
+        cancel.grid(column=2, row=len(label_text), sticky=S + E)
+        apply.grid(column=3, row=len(label_text), sticky=S + E)
 
         root.mainloop()
 
