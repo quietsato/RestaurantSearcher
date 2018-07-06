@@ -115,15 +115,16 @@ class Search(Window):
                     message='値は整数または小数で入力してください'
                 )
                 return
-            params = ["{0:.7f}".format(float(lat.string)),
-                      "{0:.7f}".format(float(lng.string))]
+            params = [float(lat.string),
+                      float(lng.string)]
 
         result = self.getRDataByLatLng(params)
         if result is None:
             tkmsg.showinfo(
                 title='検索結果',
                 message=
-                '検索地周辺の検索結果は0件でした\n異なる地点でお試しください'
+                '検索地周辺の検索結果は0件でした\n' +
+                '異なる地点を指定するか、入力値の精度を上げてみてください'
             )
             return
         r = Result(result, cond)
@@ -149,7 +150,6 @@ class Search(Window):
             str(res['results'][0]['geometry']['location']['lat']),
             str(res['results'][0]['geometry']['location']['lng'])
         ]
-        print(location)
         return location
 
     def getRDataByLatLng(self, location):
@@ -159,7 +159,7 @@ class Search(Window):
             'lat': location[0],
             'lng': location[1],
             'format': 'json',
-            'count': '100'
+            'count': '50'
         }).json()
 
         print(res['results'])
@@ -234,8 +234,8 @@ class Option(Window):
             label[count].grid(column=0, columnspan=2, row=count + 1, sticky=E)
             combo[count].grid(column=2, columnspan=2, row=count + 1, sticky=W)
 
-        cancel.grid(column=2, row=len(label_text), sticky=S + E)
-        apply.grid(column=3, row=len(label_text), sticky=S + E)
+        cancel.grid(column=2, row=len(label_text) + 1, sticky=S + E)
+        apply.grid(column=3, row=len(label_text) + 1, sticky=S + E)
 
         root.mainloop()
 
