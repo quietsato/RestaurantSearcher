@@ -109,13 +109,14 @@ class Search(Window):
             pattern = r'^([1-9]\d*|0)(\.\d+)?$'
             lat = re.match(pattern, entry['lat'].get())
             lng = re.match(pattern, entry['lng'].get())
-            if (lat is None or lng is None):
+            if lat is None or lng is None:
                 tkmsg.showwarning(
                     title='入力値エラー',
                     message='値は整数または小数で入力してください'
                 )
                 return
-            params = [lat.string, lng.string]
+            params = ["{0:.7f}".format(float(lat.string)),
+                      "{0:.7f}".format(float(lng.string))]
 
         result = self.getRDataByLatLng(params)
         if result is None:
@@ -174,17 +175,68 @@ class Search(Window):
 
 
 class Option(Window):
-    # THINK ABOUT WHERE BY ALSO GOOD!!!
 
     def __init__(self, caller, cond):
         self.root = Tk()
         self.cond = cond
-        self.makeWindow(root=Tk())
-        # TODO チェックボックスの状態をcondをもとに指定
+        self.caller = caller
+        self.makeWindow(root=self.root)
         pass
 
-    def makeWindow(self, root):
-        # TODO チェックボックスの状態をcondをもとに指定
+    def makeWindow(self, root, cond):
+        # ウィジェットの定義
+        label1 = ttk.Label(root, text='検索項目')
+        label2 = ttk.Label(root, text='条件')
+        # コンボボックスの見出し
+        label_text = [
+            'ジャンル', '定休日', 'Wi-fi', '飲み放題', '食べ放題',
+            '個室の有無', '禁煙席の有無', '貸し切りの有無', '駐車場'
+        ]
+        label = [
+            ttk.Label(root, text=t) for t in label_text
+        ]
+        combo = []  # コンボボックスが実際に格納されるリスト
+        button = [
+            ttk.Button(root, text='キャンセル',
+                       command=lambda: self.onCancelClicked()),
+            ttk.Button(root, text='適用',
+                       command=lambda: self.onApplyClicked(caller=self.caller, cond=cond))
+        ]
+
+        # region コンボボックスの定義
+        combo_keys = [
+            'genre_name', 'close_day', 'wifi', 'free_drink', 'free_food',
+            'private_room', 'non_smoking', 'charter', 'parking'
+        ]
+        combo_values = [
+            ('指定しない', '居酒屋以外'),
+            ('指定しない', '月', '火', '水', '木', '金', '土', '日'),
+            ('指定しない', 'あり', 'なし'),
+            ('指定しない', 'あり', 'なし'),
+            ('指定しない', 'あり', 'なし'),
+            ('指定しない', 'あり', 'なし'),
+            ('指定しない', '分煙', '禁煙'),
+            ('指定しない', 'あり', 'なし'),
+            ('指定しない', 'あり', 'なし')
+        ]
+        for num in range(len(combo_keys)):
+            c = ttk.Combobox(root, state='readonly')
+            c['values'] = combo_values[num]
+            current_value = cond.data[combo_keys[num]]
+            # コンボボックスの初期値のインデックスをcondの値から設定
+            c.current(combo_values[num].index(current_value))
+            combo.append(c)
+        # endregion
+
+        label1.grid(column=0, columnspan=2, row=0)
+        label2.grid(column=2, columnspan=2, row=0)
+
+        for row in range(1, len(label_text) + 1):
+            label[row].grid(column=0, columnspan=2, row=row, anchor=E)
+            combo[row].grid(column=2, columnspan=2, row=row, anchor=W)
+
+
+
         root.mainloop()
 
     def onApplyClicked(self, caller, cond):
