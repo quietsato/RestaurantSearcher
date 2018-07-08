@@ -174,6 +174,21 @@ class Search(Window):
 
 
 class Option(Window):
+    option_keys = [
+        'genre_name', 'close_day', 'wifi', 'free_drink', 'free_food',
+        'private_room', 'non_smoking', 'charter', 'parking'
+    ]
+    option_values = [
+        ('指定しない', '居酒屋以外'),
+        ('指定しない', '月', '火', '水', '木', '金', '土', '日'),
+        ('指定しない', 'あり', 'なし'),
+        ('指定しない', 'あり', 'なし'),
+        ('指定しない', 'あり', 'なし'),
+        ('指定しない', 'あり', 'なし'),
+        ('指定しない', '分煙', '禁煙'),
+        ('指定しない', 'あり', 'なし'),
+        ('指定しない', 'あり', 'なし')
+    ]
 
     def __init__(self, caller, cond):
         self.root = Tk()
@@ -202,30 +217,16 @@ class Option(Window):
         cancel = ttk.Button(root, text='キャンセル',
                             command=lambda: self.onCancelClicked())
         apply = ttk.Button(root, text='適用',
-                           command=lambda: self.onApplyClicked(caller=self.caller, cond=cond))
+                           command=lambda: self.onApplyClicked(caller=self.caller, combo=combo))
 
         # region コンボボックスの定義
-        combo_keys = [
-            'genre_name', 'close_day', 'wifi', 'free_drink', 'free_food',
-            'private_room', 'non_smoking', 'charter', 'parking'
-        ]
-        combo_values = [
-            ('指定しない', '居酒屋以外'),
-            ('指定しない', '月', '火', '水', '木', '金', '土', '日'),
-            ('指定しない', 'あり', 'なし'),
-            ('指定しない', 'あり', 'なし'),
-            ('指定しない', 'あり', 'なし'),
-            ('指定しない', 'あり', 'なし'),
-            ('指定しない', '分煙', '禁煙'),
-            ('指定しない', 'あり', 'なし'),
-            ('指定しない', 'あり', 'なし')
-        ]
-        for num in range(len(combo_keys)):
+
+        for num in range(len(self.option_keys)):
             c = ttk.Combobox(root, state='readonly')
-            c['values'] = combo_values[num]
-            current_value = self.cond.data[combo_keys[num]]
+            c['values'] = self.option_values[num]
+            current_value = self.cond.data[self.option_keys[num]]
             # コンボボックスの初期値のインデックスをcondの値から設定
-            c.current(combo_values[num].index(current_value))
+            c.current(self.option_values[num].index(current_value))
             combo.append(c)
         # endregion
 
@@ -247,8 +248,12 @@ class Option(Window):
 
         root.mainloop()
 
-    def onApplyClicked(self, caller, cond):
-        # TODO チェックボックスをもとにcondのフィールドを指定
+    def onApplyClicked(self, caller, combo):
+        # TODO コンボボックスをもとにcondのフィールドを指定
+        cond = Condition()
+        for i in range(len(combo)):
+            cond.data[self.option_keys[i]] = combo[i].get()
+
         if caller is Search:
             caller.cond = cond
         elif caller is Result:
@@ -259,7 +264,7 @@ class Option(Window):
         self.root.destroy()
 
     def onCancelClicked(self):
-        pass
+        self.root.destroy()
 
     def onClose(self):
         tkmsg.showwarning(title='確認',
