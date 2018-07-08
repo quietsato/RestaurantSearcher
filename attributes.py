@@ -17,6 +17,23 @@ class Condition(Attributes):
             self.data[key] = '指定しない'
 
 
+option_keys = [
+    'genre_name', 'close_day', 'wifi', 'free_drink', 'free_food',
+    'private_room', 'non_smoking', 'charter', 'parking'
+]
+option_values = [
+    ('指定しない', '居酒屋以外'),
+    ('指定しない', '月', '火', '水', '木', '金', '土', '日'),
+    ('指定しない', 'あり', 'なし'),
+    ('指定しない', 'あり', 'なし'),
+    ('指定しない', 'あり', 'なし'),
+    ('指定しない', 'あり', 'なし'),
+    ('指定しない', 'あり', 'なし'),
+    ('指定しない', 'あり', 'なし'),
+    ('指定しない', 'あり', 'なし')
+]
+
+
 class Data(Attributes):
 
     def __init__(self, r_data):
