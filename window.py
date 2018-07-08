@@ -249,7 +249,6 @@ class Option(Window):
         root.mainloop()
 
     def onApplyClicked(self, caller, combo):
-        # TODO コンボボックスをもとにcondのフィールドを指定
         cond = Condition()
         for i in range(len(combo)):
             cond.data[self.option_keys[i]] = combo[i].get()
