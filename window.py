@@ -174,21 +174,6 @@ class Search(Window):
 
 
 class Option(Window):
-    option_keys = [
-        'genre_name', 'close_day', 'wifi', 'free_drink', 'free_food',
-        'private_room', 'non_smoking', 'charter', 'parking'
-    ]
-    option_values = [
-        ('指定しない', '居酒屋以外'),
-        ('指定しない', '月', '火', '水', '木', '金', '土', '日'),
-        ('指定しない', 'あり', 'なし'),
-        ('指定しない', 'あり', 'なし'),
-        ('指定しない', 'あり', 'なし'),
-        ('指定しない', 'あり', 'なし'),
-        ('指定しない', '分煙', '禁煙'),
-        ('指定しない', 'あり', 'なし'),
-        ('指定しない', 'あり', 'なし')
-    ]
 
     def __init__(self, caller, cond):
         self.root = Tk()
@@ -221,12 +206,12 @@ class Option(Window):
 
         # region コンボボックスの定義
 
-        for num in range(len(self.option_keys)):
+        for num in range(len(option_keys)):
             c = ttk.Combobox(root, state='readonly')
-            c['values'] = self.option_values[num]
-            current_value = self.cond.data[self.option_keys[num]]
+            c['values'] = option_values[num]
+            current_value = self.cond.data[option_keys[num]]
             # コンボボックスの初期値のインデックスをcondの値から設定
-            c.current(self.option_values[num].index(current_value))
+            c.current(option_values[num].index(current_value))
             combo.append(c)
         # endregion
 
@@ -251,7 +236,9 @@ class Option(Window):
     def onApplyClicked(self, caller, combo):
         cond = Condition()
         for i in range(len(combo)):
-            cond.data[self.option_keys[i]] = combo[i].get()
+            cond.data[option_keys[i]] = combo[i].get()
+
+        print(cond.data)
 
         if caller is Search:
             caller.cond = cond
@@ -275,12 +262,23 @@ class Result(Window):
     def __init__(self, result, cond):
         self.result = result
         self.cond = cond
-        self.makeWindow(root=Tk())
+        self.root = Tk()
+        self.makeWindow(root=self.root)
 
     def makeWindow(self, root):
-        # TODO condをもとにresult内のデータを絞り込む
+        show_data = self.FindMatchResult(result=self.result, cond=self.cond)
         # TODO ListBoxの中身を絞り込まれたデータをもとに作成
         root.mainloop()
+
+    def FindMatchResult(self, result, cond):
+        # TODO condをもとにresult内のデータを絞り込む
+        for res in result:
+            
+            pass
+
+        return result
+
+        pass
 
     def onListItemClicked(self, itemNum):
         # TODO 表示する値を設定
