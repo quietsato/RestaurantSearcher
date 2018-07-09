@@ -42,7 +42,8 @@ class Data(Attributes):
                       'catch': '',
                       'open': '',
                       'course': '',
-                      'midnight': ''}
+                      'midnight': '',
+                      'close_day': ''}
         self.data.update(additional)
 
         self.data['name'] = r_data['name']
