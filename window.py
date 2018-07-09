@@ -41,7 +41,8 @@ class Search(Window):
         label1 = ttk.Label(root,
                            text='検索条件：')
         oButton = ttk.Button(root,
-                             text='詳細検索')
+                             text='詳細検索',
+                             command=lambda : self.onOptionClicked(cond=self.cond))
         radio_value = BooleanVar()
 
         lButton = ttk.Radiobutton(root,
@@ -65,7 +66,9 @@ class Search(Window):
             'city': ttk.Entry(root)
         }
         sButton = ttk.Button(root,
-                             text='検索する')
+                             text='検索する',
+                             command=
+                             lambda: self.onSearchClicked(radio_value.get(), self.cond, entry))
 
         # ウィジェットの配置
         label1.grid(column=0, row=0, padx=5, pady=5, sticky=W)
@@ -85,10 +88,6 @@ class Search(Window):
         entry['city'].grid(column=1, columnspan=2, row=7, padx=5, pady=5, sticky=W + E)
 
         sButton.grid(column=2, row=8, padx=5, pady=5, sticky=E + S)
-
-        # ウィジェットのイベントバインディング
-        sButton.configure(command=
-                          lambda: self.onSearchClicked(radio_value.get(), self.cond, entry))
 
         # rootの表示続行処理
         root.mainloop()
@@ -168,11 +167,11 @@ class Search(Window):
             return None
 
         r_data = []
-        for num in range(len(res['results']['shop'])):
-            r = Data(r_data=res['results']['shop'][num])
-            pprint.pprint(r.data.items())
-            r_data.append(r)
+        for shop in res['results']['shop']:
+            r_data.append(Data(shop))
 
+        for i in r_data:
+            print(i.data.items())
         return r_data
 
 
@@ -194,7 +193,7 @@ class Option(Window):
         label2 = ttk.Label(root, text='条件')
         # コンボボックスの見出し
         label_text = [
-            'ジャンル', '定休日', 'Wi-fi', '飲み放題', '食べ放題',
+            'ジャンル', 'Wi-fi', '飲み放題', '食べ放題',
             '個室の有無', '禁煙席の有無', '貸し切りの有無', '駐車場'
         ]
         label = [
