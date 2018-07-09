@@ -6,7 +6,7 @@ from tkinter import ttk
 import tkinter.messagebox as tkmsg
 import requests as rq
 import webbrowser as wb
-
+import pprint
 
 # print('Please run main.py')
 # exit(0)
@@ -126,8 +126,10 @@ class Search(Window):
                 '異なる地点を指定するか、入力値の精度を上げてみてください'
             )
             return
-        r = Result(result, cond)
-        return result
+        for num in range(len(result)):
+            pprint.pprint(result[num].data)
+        self.root.destroy()
+        Result(result, cond)
 
     def onClose(self):
         tkmsg.askokcancel(
@@ -165,10 +167,11 @@ class Search(Window):
         if res['results']['results_available'] == 0:
             return None
 
-        r_data = [
-            Data(shop)
-            for shop in res['results']['shop']
-        ]
+        r_data = []
+        for num in range(len(res['results']['shop'])):
+            r = Data(r_data=res['results']['shop'][num])
+            pprint.pprint(r.data.items())
+            r_data.append(r)
 
         return r_data
 
@@ -261,24 +264,75 @@ class Option(Window):
 class Result(Window):
     def __init__(self, result, cond):
         self.result = result
+        for shop in self.result:
+            print(shop.data['name'])
         self.cond = cond
         self.root = Tk()
+        self.display_data = self.FindMatchResult(result=self.result, cond=self.cond)
+        for shop in self.display_data:
+            print(shop.data['name'])
+
         self.makeWindow(root=self.root)
 
     def makeWindow(self, root):
-        show_data = self.FindMatchResult(result=self.result, cond=self.cond)
+
+        # ウィジェットの定義
+        shop_list = Listbox(root)
+        shop_image = Canvas(root)
+        shop_detail = Listbox(root)
+        shop_others = Listbox(root)
+        filter = Button(root,
+                        text='フィルター',
+                        command=lambda: self.onFilterClicked(cond=self.cond))
+        web = Button(root,
+                     text='Webページ',
+                     command=lambda: self.onPageClicked(
+                         self.display_data[shop_list.curselection()[0]].data['url']))
+        google = Button(root,
+                        text='Google検索',
+                        command=lambda: self.onGSearchClicked(
+                            self.display_data[shop_list.curselection()[0]].data['name']))
+
+        shop_list.grid(column=0, columnspan=2, row=0, rowspan=2,
+                       padx=5, pady=5)
+        shop_image.grid(column=2, columnspan=2, row=0,
+                        padx=5, pady=5)
+        shop_detail.grid(column=4, columnspan=2, row=1,
+                         padx=5, pady=5)
+        shop_others.grid(column=4, columnspan=2, row=0, rowspan=2,
+                         padx=5, pady=5)
+        filter.grid(column=0, row=2, padx=5, pady=5, sticky=W + S)
+        web.grid(column=4, row=2, padx=5, pady=5, sticky=E + S)
+        google.grid(column=5, row=2, padx=5, pady=5, sticky=E + S)
+
         # TODO ListBoxの中身を絞り込まれたデータをもとに作成
+        for shop in self.display_data:
+            shop_list.insert(END, shop.data['name'])
+
         root.mainloop()
 
     def FindMatchResult(self, result, cond):
         # TODO condをもとにresult内のデータを絞り込む
+        display_data = []
+        flag = True
         for res in result:
-            
-            pass
+            for key in option_keys:
+                if (cond.data[key] == '指定しない'):
+                    continue
+                else:
+                    if (key == 'genre_name'):
+                        if (cond.data[key] == '居酒屋以外'):
+                            if ('居酒屋' in res.data[key]):
+                                flag = False
 
-        return result
+                    else:
+                        if (not cond.data[key] in res.data[key]):
+                            flag = False
+            if (flag == True):
+                display_data.append(res)
+            flag = True
 
-        pass
+        return display_data
 
     def onListItemClicked(self, itemNum):
         # TODO 表示する値を設定
