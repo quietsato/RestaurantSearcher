@@ -11,6 +11,10 @@ condition = {'genre_name': default,
              'charter': default,
              'parking': default
              }
+condition_keys = [
+    'genre_name', 'wifi', 'free_drink', 'free_food',
+    'private_room', 'non_smoking', 'charter', 'parking'
+]
 
 condition_values = [
     ('指定しない', '居酒屋以外'),
