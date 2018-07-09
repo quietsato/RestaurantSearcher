@@ -1,6 +1,5 @@
 class Attributes:
     data = {'genre_name': '',
-            'close_day': '',
             'wifi': '',
             'free_drink': '',
             'free_food': '',
@@ -18,12 +17,11 @@ class Condition(Attributes):
 
 
 option_keys = [
-    'genre_name', 'close_day', 'wifi', 'free_drink', 'free_food',
+    'genre_name', 'wifi', 'free_drink', 'free_food',
     'private_room', 'non_smoking', 'charter', 'parking'
 ]
 option_values = [
     ('指定しない', '居酒屋以外'),
-    ('指定しない', '月', '火', '水', '木', '金', '土', '日'),
     ('指定しない', 'あり', 'なし'),
     ('指定しない', 'あり', 'なし'),
     ('指定しない', 'あり', 'なし'),
