@@ -208,12 +208,12 @@ class Option(Window):
 
         # region コンボボックスの定義
 
-        for num in range(len(option_keys)):
+        for num in range(len(condition_keys)):
             c = ttk.Combobox(root, state='readonly')
-            c['values'] = option_values[num]
-            current_value = self.cond.data[option_keys[num]]
+            c['values'] = condition_values[num]
+            current_value = self.cond.data[condition_keys[num]]
             # コンボボックスの初期値のインデックスをcondの値から設定
-            c.current(option_values[num].index(current_value))
+            c.current(condition_values[num].index(current_value))
             combo.append(c)
         # endregion
 
@@ -238,7 +238,7 @@ class Option(Window):
     def onApplyClicked(self, caller, combo):
         cond = Condition()
         for i in range(len(combo)):
-            cond.data[option_keys[i]] = combo[i].get()
+            cond.data[condition_keys[i]] = combo[i].get()
 
         print(cond.data)
 
@@ -315,7 +315,7 @@ class Result(Window):
         display_data = []
         flag = True
         for res in result:
-            for key in option_keys:
+            for key in condition_keys:
                 if (cond.data[key] == '指定しない'):
                     continue
                 else:
