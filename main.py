@@ -23,7 +23,7 @@ def make_search_window():
                           text='検索条件：')
     option_button = ttk.Button(root,
                                text='詳細検索',
-                               command=lambda: option_clicked())
+                               command=lambda: make_option_window())
     is_city_name = tk.BooleanVar()
     city_radio = ttk.Radiobutton(root,
                                  text='都市名・建物名',
@@ -73,10 +73,6 @@ def make_search_window():
 
     root.mainloop()
     # endregion
-
-
-def option_clicked():
-    pass
 
 
 def search_clicked(city, entry):
