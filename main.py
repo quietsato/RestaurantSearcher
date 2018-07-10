@@ -1,9 +1,11 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 
-import attributes as at
+from attributes import *
 
-condition = at.get_condition()
+condition = get_condition()
+rst_data = []
+display_data = []
 
 
 # region 検索画面
