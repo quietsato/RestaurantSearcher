@@ -112,7 +112,7 @@ def make_option_window():
         combo.append(ttk.Combobox(root, state='readonly'))
     cancel = ttk.Button(root,
                         text='キャンセル',
-                        command=lambda: cancel_clicked())
+                        command=lambda: root.destroy())
     apply = ttk.Button(root,
                        text='適用',
                        command=lambda: apply_clicked())
@@ -131,10 +131,6 @@ def make_option_window():
 
     root.mainloop()
     # endregion
-
-
-def cancel_clicked():
-    pass
 
 
 def apply_clicked():
@@ -184,6 +180,7 @@ def make_result_window():
 
 
 def filter_clicked():
+    # 仕様変更というタブーを使うならこれは削除するΣ(￣ロ￣lll)ｶﾞｰﾝ
     pass
 
 
