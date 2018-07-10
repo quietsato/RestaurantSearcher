@@ -26,7 +26,7 @@ class Search(Window):
         self.size = '300x250'
         self.title = '検索'
         self.root = Tk()
-        self.cond = Condition()
+        self.cond = getCondition()
         self.makeWindow(root=self.root)
 
     def makeWindow(self, root):
@@ -126,7 +126,7 @@ class Search(Window):
             )
             return
         for num in range(len(result)):
-            pprint.pprint(result[num].data)
+            pprint.pprint(result[num])
         self.root.destroy()
         Result(result, cond)
 
@@ -168,10 +168,10 @@ class Search(Window):
 
         r_data = []
         for shop in res['results']['shop']:
-            r_data.append(Data(shop))
+            r_data.append(convertData(shop))
 
         for i in r_data:
-            print(i.data.items())
+            print(i.items())
         return r_data
 
 
@@ -211,7 +211,7 @@ class Option(Window):
         for num in range(len(condition_keys)):
             c = ttk.Combobox(root, state='readonly')
             c['values'] = condition_values[num]
-            current_value = self.cond.data[condition_keys[num]]
+            current_value = self.cond[condition_keys[num]]
             # コンボボックスの初期値のインデックスをcondの値から設定
             c.current(condition_values[num].index(current_value))
             combo.append(c)
@@ -236,20 +236,21 @@ class Option(Window):
         root.mainloop()
 
     def onApplyClicked(self, caller, combo):
-        cond = Condition()
+        cond = getCondition()
         for i in range(len(combo)):
-            cond.data[condition_keys[i]] = combo[i].get()
+            cond[condition_keys[i]] = combo[i].get()
 
-        print(cond.data)
+        print(cond)
 
         if caller is Search:
             caller.cond = cond
+            self.root.destroy()
         elif caller is Result:
             # TODO callerを閉じてResultを再生成
             r = caller.result
             caller.root.destroy()
+            self.root.destroy()
             Result(result=r, cond=cond)
-        self.root.destroy()
 
     def onCancelClicked(self):
         self.root.destroy()
@@ -261,15 +262,13 @@ class Option(Window):
 
 
 class Result(Window):
-    def __init__(self, result, cond):
+    def __init__(self, result=None, cond=None):
         self.result = result
         for shop in self.result:
-            print(shop.data['name'])
+            print(shop['name'])
         self.cond = cond
         self.root = Tk()
         self.display_data = self.FindMatchResult(result=self.result, cond=self.cond)
-        for shop in self.display_data:
-            print(shop.data['name'])
 
         self.makeWindow(root=self.root)
 
@@ -286,11 +285,11 @@ class Result(Window):
         web = Button(root,
                      text='Webページ',
                      command=lambda: self.onPageClicked(
-                         self.display_data[shop_list.curselection()[0]].data['url']))
+                         self.display_data[shop_list.curselection()[0]]['url']))
         google = Button(root,
                         text='Google検索',
                         command=lambda: self.onGSearchClicked(
-                            self.display_data[shop_list.curselection()[0]].data['name']))
+                            self.display_data[shop_list.curselection()[0]]['name']))
 
         shop_list.grid(column=0, columnspan=2, row=0, rowspan=2,
                        padx=5, pady=5)
@@ -306,7 +305,7 @@ class Result(Window):
 
         # TODO ListBoxの中身を絞り込まれたデータをもとに作成
         for shop in self.display_data:
-            shop_list.insert(END, shop.data['name'])
+            shop_list.insert(END, shop['name'])
 
         root.mainloop()
 
@@ -316,16 +315,16 @@ class Result(Window):
         flag = True
         for res in result:
             for key in condition_keys:
-                if (cond.data[key] == '指定しない'):
+                if (cond[key] == '指定しない'):
                     continue
                 else:
                     if (key == 'genre_name'):
-                        if (cond.data[key] == '居酒屋以外'):
+                        if (cond[key] == '居酒屋以外'):
                             if ('居酒屋' in res.data[key]):
                                 flag = False
 
                     else:
-                        if (not cond.data[key] in res.data[key]):
+                        if (not cond[key] in res[key]):
                             flag = False
             if (flag == True):
                 display_data.append(res)
@@ -339,8 +338,7 @@ class Result(Window):
         pass
 
     def onFilterClicked(self, cond):
-        o = Option(caller=self, cond=cond)
-        pass
+        Option(caller=self, cond=cond)
 
     def onPageClicked(self, url):
         wb.open(url=url)
