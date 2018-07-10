@@ -1,26 +1,13 @@
-class Attributes:
-    data = {'genre_name': '',
-            'wifi': '',
-            'free_drink': '',
-            'free_food': '',
-            'private_room': '',
-            'non_smoking': '',
-            'charter': '',
-            'parking': ''
-            }
+# このファイルには変数定義のみが書かれている
+# ここの変数の値は変更しないこと
 
-
-class Condition(Attributes):
-    def __init__(self):
-        for key in self.data.keys():
-            self.data[key] = '指定しない'
-
-
-option_keys = [
+condition_default = '指定しない'
+condition_keys = [
     'genre_name', 'wifi', 'free_drink', 'free_food',
     'private_room', 'non_smoking', 'charter', 'parking'
 ]
-option_values = [
+
+condition_values = [
     ('指定しない', '居酒屋以外'),
     ('指定しない', 'あり', 'なし'),
     ('指定しない', 'あり', 'なし'),
@@ -31,36 +18,49 @@ option_values = [
     ('指定しない', 'あり', 'なし')
 ]
 
+data = {'name': '',
+        'address': '',
+        'url': '',
+        'imageUrl': '',
+        'catch': '',
+        'open': '',
+        'course': '',
+        'midnight': '',
+        'close_day': ''}
+data_keys = ['name', 'address', 'url', 'imageUrl', 'catch',
+             'open', 'course', 'midnight', 'close_day'] + condition_keys
 
-class Data(Attributes):
+def getCondition():
+    # 戻り地のテンプレートの作成
+    cond = {
+        key: condition_default for key in condition_keys
+    }
 
-    def __init__(self, r_data):
-        additional = {'name': '',
-                      'address': '',
-                      'url': '',
-                      'imageUrl': '',
-                      'catch': '',
-                      'open': '',
-                      'course': '',
-                      'midnight': '',
-                      'close_day': ''}
-        self.data.update(additional)
+    return cond
 
-        self.data['name'] = r_data['name']
-        self.data['address'] = r_data['address']
-        self.data['url'] = r_data['urls']['pc']
-        self.data['imageUrl'] = r_data['photo']['pc']['l']
+def convertData(res=None):
+    # 戻り値のテンプレートの作成
+    r_data = {
+        key: '' for key in data_keys
+    }
 
-        self.data['genre_name'] = r_data['genre']['name']
-        self.data['charter'] = r_data['charter']
-        self.data['close_day'] = r_data['close']
-        self.data['free_drink'] = r_data['free_drink']
-        self.data['free_food'] = r_data['free_food']
-        self.data['wifi'] = r_data['wifi']
-        self.data['private_room'] = r_data['private_room']
-        self.data['non_smoking'] = r_data['non_smoking']
+    r_data['name'] = res['name']
+    r_data['address'] = res['address']
+    r_data['url'] = res['urls']['pc']
+    r_data['imageUrl'] = res['photo']['pc']['l']
 
-        self.data['catch'] = r_data['catch']
-        self.data['open'] = r_data['open']
-        self.data['course'] = r_data['course']
-        self.data['midnight'] = r_data['midnight']
+    r_data['genre_name'] = res['genre']['name']
+    r_data['charter'] = res['charter']
+    r_data['close_day'] = res['close']
+    r_data['free_drink'] = res['free_drink']
+    r_data['free_food'] = res['free_food']
+    r_data['wifi'] = res['wifi']
+    r_data['private_room'] = res['private_room']
+    r_data['non_smoking'] = res['non_smoking']
+
+    r_data['catch'] = res['catch']
+    r_data['open'] = res['open']
+    r_data['course'] = res['course']
+    r_data['midnight'] = res['midnight']
+
+    return r_data
