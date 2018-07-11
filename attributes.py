@@ -1,6 +1,3 @@
-# このファイルには変数定義のみが書かれている
-# ここの変数の値は変更しないこと
-
 condition_default = '指定しない'
 condition_keys = [
     'genre_name', 'wifi', 'free_drink', 'free_food',
@@ -30,15 +27,15 @@ data = {'name': '',
 data_keys = ['name', 'address', 'url', 'imageUrl', 'catch',
              'open', 'course', 'midnight', 'close_day'] + condition_keys
 
-def getCondition():
-    # 戻り地のテンプレートの作成
+def get_condition():
+    # 戻り値のテンプレートの作成
     cond = {
         key: condition_default for key in condition_keys
     }
 
     return cond
 
-def convertData(res=None):
+def convert_data(res=None):
     # 戻り値のテンプレートの作成
     r_data = {
         key: '' for key in data_keys
