@@ -3,6 +3,7 @@ import tkinter.ttk as ttk
 from tkinter.messagebox import showinfo, showwarning
 import requests as rq
 import re
+import webbrowser as wb
 
 from attributes import *
 from urls import *
