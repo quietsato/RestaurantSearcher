@@ -1,7 +1,12 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+from tkinter.messagebox import showinfo, showwarning
+import requests as rq
+import re
 
 from attributes import *
+from urls import *
+from keys import *
 
 condition = get_condition()
 rst_data = []
@@ -33,6 +38,7 @@ def make_search_window():
                                      text='緯度・経度',
                                      variable=is_city_name,
                                      value=False)
+    is_city_name.set(False)
     entry_label = [
         ttk.Label(root, text='緯度'),
         ttk.Label(root, text='経度'),
@@ -43,7 +49,7 @@ def make_search_window():
         entry.append(ttk.Entry(root))
     search_button = ttk.Button(root,
                                text='検索する',
-                               command=lambda: search_clicked(is_city_name, entry))
+                               command=lambda: search_clicked(is_city_name.get(), entry, root))
     # endregion
 
     # region ウィジェットの配置
@@ -75,15 +81,51 @@ def make_search_window():
     # endregion
 
 
-def search_clicked(city, entry):
+def search_clicked(city, entry, root):
+    print(condition)
+    # region 位置情報を変数に格納
     if city:
         # ジオコーディング
-        pass
+        city_name = entry[2].get()
+        geo_res = rq.get(g_apiurl, params={
+            'address': city_name, 'key': g_KEY
+        }).json()
+        if geo_res['status'] != 'OK':
+            showinfo(title='見つかりませんでした',
+                     message='異なるデータで再度お試しください')
+            return
+        location = [str(geo_res['results'][0]['geometry']['location']['lat']),
+                    str(geo_res['results'][0]['geometry']['location']['lng'])]
     else:
         # 入力値チェック
+        pattern = r'^([1-9]\d*|0)(\.\d+)?$'  # 小数を表す正規表現
+        lat = re.match(pattern, entry[0].get())
+        lng = re.match(pattern, entry[1].get())
+        if lat is None or lng is None:
+            showwarning(title='入力値エラー',
+                        message='値は整数または小数で入力してください')
+            return
         # 値をリストに格納
-        pass
-    pass
+        location = [lat.string,
+                    lng.string]
+    # endregion
+
+    res = rq.get(url=h_apiurl, params={
+        'key': h_KEY,
+        'lat': location[0],
+        'lng': location[1],
+        'format': 'json',
+        'count': '50'
+    }).json()
+
+    if res['results']['results_available'] == 0:
+        showinfo(title='検索結果',
+                 message='検索地周辺の検索結果は0件でした\n' +
+                         '異なる地点を指定するか、入力値の精度を上げてみてください')
+        return
+
+    rst_data = [rst for rst in res['results']['shop']]
+    root.destroy()
 
 
 # endregion
@@ -115,7 +157,14 @@ def make_option_window():
                         command=lambda: root.destroy())
     apply = ttk.Button(root,
                        text='適用',
-                       command=lambda: apply_clicked())
+                       command=lambda: apply_clicked(combo, root))
+
+    for num in range(len(combo)):
+        combo[num]['values'] = condition_values[num]
+        current_value = condition[condition_keys[num]]
+        # コンボボックスの初期値をconditionを読み込んで指定
+        combo[num].current(newindex=(condition_values[num].index(current_value)))
+        pass
     # endregion
 
     # region ウィジェットの配置
@@ -133,8 +182,10 @@ def make_option_window():
     # endregion
 
 
-def apply_clicked():
-    pass
+def apply_clicked(combo, root):
+    for num in range(len(combo)):
+        condition[condition_keys[num]] = combo[num].get()
+    root.destroy()
 
     # endregion
 
@@ -195,4 +246,4 @@ def google_search_clicked():
 # endregion
 
 
-make_result_window()
+make_search_window()
