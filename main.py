@@ -126,6 +126,7 @@ def search_clicked(city, entry, root):
 
     rst_data = [rst for rst in res['results']['shop']]
     root.destroy()
+    make_result_window()
 
 
 # endregion
@@ -212,10 +213,10 @@ def make_result_window():
                               command=lambda: filter_clicked())
     web_button = tk.Button(root,
                            text='Webページ',
-                           command=lambda: page_clicked())
+                           command=lambda: page_clicked(url=None))
     google = tk.Button(root,
                        text='Google検索',
-                       command=lambda: google_search_clicked())
+                       command=lambda: google_search_clicked(name=None))
     # endregion
     # region ウィジェットの配置
     shop_list.grid(column=0, columnspan=2, row=0, rowspan=2, padx=5, pady=5, sticky=tk.N + tk.S + tk.W + tk.E)
@@ -232,19 +233,18 @@ def make_result_window():
 
 def filter_clicked():
     # 仕様変更というタブーを使うならこれは削除するΣ(￣ロ￣lll)ｶﾞｰﾝ
-    pass
+    make_option_window()
 
 
-def page_clicked():
-    pass
+def page_clicked(url):
+    wb.open(url=url)
 
 
-def google_search_clicked():
-    pass
+def google_search_clicked(name):
+    wb.open(url=g_search + name)
 
 
 # endregion
 
 
 make_search_window()
-make_result_window()
