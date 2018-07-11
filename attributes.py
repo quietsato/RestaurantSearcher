@@ -27,6 +27,7 @@ data = {'name': '',
 data_keys = ['name', 'address', 'url', 'imageUrl', 'catch',
              'open', 'course', 'midnight', 'close_day'] + condition_keys
 
+
 def get_condition():
     # 戻り値のテンプレートの作成
     cond = {
@@ -34,6 +35,7 @@ def get_condition():
     }
 
     return cond
+
 
 def convert_data(res=None):
     # 戻り値のテンプレートの作成
