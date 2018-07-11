@@ -1,8 +1,10 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter.messagebox import showinfo, showwarning
+from PIL import Image
+import re, io
+import urllib.request as request
 import requests as rq
-import re
 import webbrowser as wb
 
 from attributes import *
@@ -260,6 +262,23 @@ def make_result_window():
 
 
 def shop_list_selected(num, image, detail, others):
+    # Listboxの初期化
+    detail.delete(first=0, last=tk.END)
+    others.delete(first=0, last=tk.END)
+    # Listboxに値を追加
+    important_keys = ['name', 'address', 'open', 'catch']
+    for key in important_keys:
+        detail.insert(tk.END, display_data[num][key])
+
+    for key in list(set(data_keys) -
+                    (set(important_keys) & {'url', 'imageUrl'})):
+        others.insert(tk.END, display_data[num][key])
+
+    # 店舗画像を取ってきてCanvasに表示
+    f = io.BytesIO(request.urlopen(display_data[num]['imageUrl']).read())
+    i = Image.open(f)
+    # imageにiをセットする
+
     pass
 
 
