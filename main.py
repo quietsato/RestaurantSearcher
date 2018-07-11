@@ -247,3 +247,4 @@ def google_search_clicked():
 
 
 make_search_window()
+make_result_window()
