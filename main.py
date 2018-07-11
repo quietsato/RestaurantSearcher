@@ -83,7 +83,6 @@ def make_search_window():
 
 
 def search_clicked(city, entry, root):
-    print(condition)
     # region 位置情報を変数に格納
     if city:
         # ジオコーディング
@@ -125,7 +124,8 @@ def search_clicked(city, entry, root):
                          '異なる地点を指定するか、入力値の精度を上げてみてください')
         return
 
-    rst_data = [rst for rst in res['results']['shop']]
+    global rst_data
+    rst_data = [convert_data(rst) for rst in res['results']['shop']]
     root.destroy()
     make_result_window()
 
@@ -196,6 +196,26 @@ def apply_clicked(combo, root):
 
 # region 検索結果画面
 def make_result_window():
+    # region conditionをもとにdisplay_dataを設定する
+    flag = True
+    for rst in rst_data:
+        for key in condition_keys:
+            # もし、条件の値が'指定しない'だったら無視する
+            if condition[key] != '指定しない':
+                # もし、条件の値が'指定しない'でない、つまり'居酒屋以外'であるなら
+                # '居酒屋'がrstに含まれていないかチェックする
+
+                if key == 'genre_name' and '居酒屋' in rst[key]:
+                    flag = False
+                # 検索条件が居酒屋以外なら、'あり', 'なし'がrstに含まれているか
+                # チェックする
+                if not condition[key] in rst[key]:
+                    flag = False
+        if flag:  # 条件を満たしているならdisplay_dataに追加
+            display_data.append(rst)
+        flag = True
+    # endregion
+
     # region rootウィンドウの設定
     root = tk.Tk()
     root.title('検索結果')
@@ -218,6 +238,13 @@ def make_result_window():
     google = tk.Button(root,
                        text='Google検索',
                        command=lambda: google_search_clicked(name=None))
+
+    for rst in display_data:
+        shop_list.insert(tk.END, rst['name'])
+    shop_list.bind('<<ListboxSelect>>',
+                   lambda event: shop_list_selected(
+                       shop_list.curselection()[0],
+                       shop_image, shop_detail, shop_others))
     # endregion
     # region ウィジェットの配置
     shop_list.grid(column=0, columnspan=2, row=0, rowspan=2, padx=5, pady=5, sticky=tk.N + tk.S + tk.W + tk.E)
@@ -230,6 +257,10 @@ def make_result_window():
 
     root.mainloop()
     # endregion
+
+
+def shop_list_selected(num, image, detail, others):
+    pass
 
 
 def filter_clicked():
