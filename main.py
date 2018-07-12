@@ -222,7 +222,8 @@ def make_result_window():
     root = tk.Tk()
     root.title('検索結果')
     for column in range(6):
-        root.columnconfigure(column, weight=1)
+        if column != 2:
+            root.columnconfigure(column, weight=1)
     for row in range(3):
         root.rowconfigure(row, weight=1)
     # endregion
@@ -271,7 +272,7 @@ def shop_list_selected(num, image, detail, others):
         detail.insert(tk.END, display_data[num][key])
 
     for key in list(set(data_keys) -
-                    (set(important_keys) & {'url', 'imageUrl'})):
+                    set(important_keys) - {'url', 'imageUrl'}):
         others.insert(tk.END, display_data[num][key])
 
     # 店舗画像を取ってきてCanvasに表示
