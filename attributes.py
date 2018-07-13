@@ -27,6 +27,13 @@ data = {'name': '',
 data_keys = ['name', 'address', 'url', 'image_url', 'catch',
              'open', 'course', 'midnight', 'close_day'] + condition_keys
 
+display_data_keys = [
+    key for key in data_keys if not (key in ['url', 'image_url'])]
+
+display_data_index = ['名前', '住所', 'キャッチコピー', '営業日', 'コース料理',
+                      '深夜営業', '定休日', 'ジャンル', 'Wi-Fi', '飲み放題',
+                      '食べ放題', '個室', '禁煙席', '貸し切り', '駐車場']
+
 
 def get_condition():
     # 戻り値のテンプレートの作成
