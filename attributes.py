@@ -18,13 +18,13 @@ condition_values = [
 data = {'name': '',
         'address': '',
         'url': '',
-        'imageUrl': '',
+        'image_url': '',
         'catch': '',
         'open': '',
         'course': '',
         'midnight': '',
         'close_day': ''}
-data_keys = ['name', 'address', 'url', 'imageUrl', 'catch',
+data_keys = ['name', 'address', 'url', 'image_url', 'catch',
              'open', 'course', 'midnight', 'close_day'] + condition_keys
 
 
@@ -46,7 +46,7 @@ def convert_data(res=None):
     r_data['name'] = res['name']
     r_data['address'] = res['address']
     r_data['url'] = res['urls']['pc']
-    r_data['imageUrl'] = res['photo']['pc']['l']
+    r_data['image_url'] = res['photo']['pc']['l']
 
     r_data['genre_name'] = res['genre']['name']
     r_data['charter'] = res['charter']
