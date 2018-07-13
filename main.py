@@ -207,11 +207,11 @@ def make_result_window():
                 # もし、条件の値が'指定しない'でない、つまり'居酒屋以外'であるなら
                 # '居酒屋'がrstに含まれていないかチェックする
 
-                if key == 'genre_name' and '居酒屋' in rst[key]:
+                if (key == 'genre_name') and ('居酒屋' in rst['genre_name']):
                     flag = False
                 # 検索条件が居酒屋以外なら、'あり', 'なし'がrstに含まれているか
                 # チェックする
-                if not condition[key] in rst[key]:
+                elif not (condition[key] in rst[key]):
                     flag = False
         if flag:  # 条件を満たしているならdisplay_dataに追加
             display_data.append(rst)
@@ -229,12 +229,14 @@ def make_result_window():
     # endregion
     # region ウィジェットの定義
     shop_list = tk.Listbox(root)
-    shop_image = tk.Canvas(root)
-    shop_detail = tk.Listbox(root)
-    shop_others = tk.Listbox(root)
-    filter_button = tk.Button(root,
-                              text='フィルター',
-                              command=lambda: filter_clicked())
+    shop_detail = tk.Text(root)
+    filter_button = ttk.Button(root,
+                               text='フィルター',
+                               command=lambda: filter_clicked())
+    image_button = ttk.Button(root,
+                              text='サムネイル画像',
+                              command=lambda: image_clicked(
+                                  image_url=display_data[shop_list.curselection()[0]]['image_url']))
     web_button = tk.Button(root,
                            text='Webページ',
                            command=lambda: page_clicked(url=None))
@@ -247,14 +249,13 @@ def make_result_window():
     shop_list.bind('<<ListboxSelect>>',
                    lambda event: shop_list_selected(
                        shop_list.curselection()[0],
-                       shop_image, shop_detail, shop_others))
+                       shop_detail))
     # endregion
     # region ウィジェットの配置
     shop_list.grid(column=0, columnspan=2, row=0, rowspan=2, padx=5, pady=5, sticky=tk.N + tk.S + tk.W + tk.E)
-    shop_image.grid(column=2, columnspan=2, row=0, padx=5, pady=5, sticky=tk.N + tk.S + tk.W + tk.E)
-    shop_detail.grid(column=2, columnspan=2, row=1, padx=5, pady=5, sticky=tk.N + tk.S + tk.W + tk.E)
-    shop_others.grid(column=4, columnspan=2, row=0, rowspan=2, padx=5, pady=5, sticky=tk.N + tk.S + tk.W + tk.E)
+    shop_detail.grid(column=3, columnspan=3, row=1, padx=5, pady=5, sticky=tk.N + tk.S + tk.W + tk.E)
     filter_button.grid(column=0, row=2, padx=5, pady=5, sticky=tk.W + tk.S)
+    image_button.grid(column=3, row=2, padx=5, pady=5, sticky=tk.E + tk.S)
     web_button.grid(column=4, row=2, padx=5, pady=5, sticky=tk.E + tk.S)
     google.grid(column=5, row=2, padx=5, pady=5, sticky=tk.E + tk.S)
 
@@ -262,30 +263,28 @@ def make_result_window():
     # endregion
 
 
-def shop_list_selected(num, image, detail, others):
-    # Listboxの初期化
-    detail.delete(first=0, last=tk.END)
-    others.delete(first=0, last=tk.END)
-    # Listboxに値を追加
-    important_keys = ['name', 'address', 'open', 'catch']
-    for key in important_keys:
-        detail.insert(tk.END, display_data[num][key])
-
-    for key in list(set(data_keys) -
-                    set(important_keys) - {'url', 'imageUrl'}):
-        others.insert(tk.END, display_data[num][key])
-
-    # 店舗画像を取ってきてCanvasに表示
-    f = io.BytesIO(request.urlopen(display_data[num]['imageUrl']).read())
-    i = Image.open(f)
-    # imageにiをセットする
-
-    pass
+def shop_list_selected(index, detail):
+    detail.config(state=tk.NORMAL)
+    # Textを初期化する
+    detail.delete(index1='1.0', index2=tk.END)
+    # Textに値を追加
+    for i in range(len(display_data_keys)):
+        detail.insert(tk.END,
+                      display_data_index[i] + ' : '
+                      + display_data[index][display_data_keys[i]] + '\n')
+    detail.config(state=tk.DISABLED)
 
 
 def filter_clicked():
     # 仕様変更というタブーを使うならこれは削除するΣ(￣ロ￣lll)ｶﾞｰﾝ
     make_option_window()
+
+
+def image_clicked(image_url):
+    # 店舗画像を取ってきてPILで表示
+    f = io.BytesIO(request.urlopen(image_url).read())
+    image = Image.open(f)
+    image.show()
 
 
 def page_clicked(url):
