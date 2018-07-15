@@ -198,25 +198,7 @@ def apply_clicked(combo, root):
 
 # region 検索結果画面
 def make_result_window():
-    # region conditionをもとにdisplay_dataを設定する
-    flag = True
-    for rst in rst_data:
-        for key in condition_keys:
-            # もし、条件の値が'指定しない'だったら無視する
-            if condition[key] != '指定しない':
-                # もし、条件の値が'指定しない'でない、つまり'居酒屋以外'であるなら
-                # '居酒屋'がrstに含まれていないかチェックする
-
-                if (key == 'genre_name') and ('居酒屋' in rst['genre_name']):
-                    flag = False
-                # 検索条件が居酒屋以外なら、'あり', 'なし'がrstに含まれているか
-                # チェックする
-                elif not (condition[key] in rst[key]):
-                    flag = False
-        if flag:  # 条件を満たしているならdisplay_dataに追加
-            display_data.append(rst)
-        flag = True
-    # endregion
+    set_display_data()
 
     # region rootウィンドウの設定
     root = tk.Tk()
@@ -232,24 +214,22 @@ def make_result_window():
     shop_detail = tk.Text(root)
     filter_button = ttk.Button(root,
                                text='フィルター',
-                               command=lambda: filter_clicked())
+                               command=lambda: filter_clicked(shop_list))
     image_button = ttk.Button(root,
                               text='サムネイル画像',
-                              command=lambda: image_clicked(
-                                  image_url=display_data[shop_list.curselection()[0]]['image_url']))
+                              command=lambda: image_clicked(shop_list))
     web_button = tk.Button(root,
                            text='Webページ',
-                           command=lambda: page_clicked(url=None))
+                           command=lambda: page_clicked(shop_list))
     google = tk.Button(root,
                        text='Google検索',
-                       command=lambda: google_search_clicked(name=None))
+                       command=lambda: google_search_clicked(shop_list))
 
     for rst in display_data:
         shop_list.insert(tk.END, rst['name'])
     shop_list.bind('<<ListboxSelect>>',
                    lambda event: shop_list_selected(
-                       shop_list.curselection()[0],
-                       shop_detail))
+                       shop_list, shop_detail))
     # endregion
     # region ウィジェットの配置
     shop_list.grid(column=0, columnspan=2, row=0, rowspan=2, padx=5, pady=5, sticky=tk.N + tk.S + tk.W + tk.E)
@@ -263,36 +243,92 @@ def make_result_window():
     # endregion
 
 
-def shop_list_selected(index, detail):
-    detail.config(state=tk.NORMAL)
-    # Textを初期化する
-    detail.delete(index1='1.0', index2=tk.END)
-    # Textに値を追加
-    for i in range(len(display_data_keys)):
-        detail.insert(tk.END,
-                      display_data_index[i] + ' : '
-                      + display_data[index][display_data_keys[i]] + '\n')
-    detail.config(state=tk.DISABLED)
+def set_display_data():
+    display_data.clear()
+    # region conditionをもとにdisplay_dataを設定する
+    flag = True
+    for rst in rst_data:
+        for key in condition_keys:
+            # もし、条件の値が'指定しない'だったら無視する
+            if condition[key] != '指定しない':
+                # もし、条件の値が'指定しない'でない、つまり'居酒屋以外'であるなら
+                # '居酒屋'がrstに含まれていないかチェックする
+                if key == 'genre_name':
+                    flag = not ('居酒屋' in rst['genre_name'])
+                # 検索条件が居酒屋以外なら、'あり', 'なし'がrstに含まれているか
+                # チェックする
+                elif not (condition[key] in rst[key]):
+                    flag = False
+
+        if flag:  # 条件を満たしているならdisplay_dataに追加
+            display_data.append(rst)
+        flag = True
+    # endregion
 
 
-def filter_clicked():
-    # 仕様変更というタブーを使うならこれは削除するΣ(￣ロ￣lll)ｶﾞｰﾝ
+def shop_list_selected(shop_list, detail):
+    try:
+        index = shop_list.curselection()[0]
+    except IndexError:
+        # shop_listで店舗が選択されてないときは処理を終了する
+        return
+    else:
+        detail.config(state=tk.NORMAL)
+        # Textを初期化する
+        detail.delete(index1='1.0', index2=tk.END)
+        # Textに値を追加
+        for i in range(len(display_data_keys)):
+            detail.insert(tk.END,
+                          display_data_index[i] + ' : '
+                          + display_data[index][display_data_keys[i]] + '\n')
+        detail.config(state=tk.DISABLED)
+
+
+def filter_clicked(shop_list):
     make_option_window()
+    set_display_data()
+
+    # Listboxの初期化
+    shop_list.delete(first='1.0', last=tk.END)
+    # Listboxへ値の代入
+    for rst in rst_data:
+        shop_list.insert(tk.END, rst['name'])
 
 
-def image_clicked(image_url):
-    # 店舗画像を取ってきてPILで表示
-    f = io.BytesIO(request.urlopen(image_url).read())
-    image = Image.open(f)
-    image.show()
+def image_clicked(shop_list):
+    try:
+        index = shop_list.curselection()[0]
+    except IndexError:
+        # shop_listで店舗が選択されてないときは処理を終了する
+        return
+    else:
+        image_url = display_data[index]['image_url']
+        # 店舗画像を取ってきてPILで表示
+        f = io.BytesIO(request.urlopen(image_url).read())
+        image = Image.open(f)
+        image.show()
 
 
-def page_clicked(url):
-    wb.open(url=url)
+def page_clicked(shop_list):
+    try:
+        index = shop_list.curselection()[0]
+    except IndexError:
+        # shop_listで店舗が選択されてないときは処理を終了する
+        return
+    else:
+        url = display_data[index]['url']
+        wb.open(url=url)
 
 
-def google_search_clicked(name):
-    wb.open(url=g_search + name)
+def google_search_clicked(shop_list):
+    try:
+        index = shop_list.curselection()[0]
+    except IndexError:
+        # shop_listで店舗が選択されてないときは処理を終了する
+        return
+    else:
+        name = display_data[index]['name']
+        wb.open(url=g_search + name)
 
 
 # endregion
