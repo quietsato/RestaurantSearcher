@@ -1,15 +1,17 @@
+import io
+import re
 import tkinter as tk
 import tkinter.ttk as ttk
-from tkinter.messagebox import showinfo, showwarning
-from PIL import Image
-import re, io
 import urllib.request as request
-import requests as rq
 import webbrowser as wb
+from tkinter.messagebox import showinfo, showwarning
+
+import requests as rq
+from PIL import Image
 
 from attributes import *
-from urls import *
 from keys import *
+from urls import *
 
 condition = get_condition()
 rst_data = []
@@ -31,7 +33,7 @@ def make_search_window():
                           text='検索条件：')
     option_button = ttk.Button(root,
                                text='詳細検索',
-                               command=lambda: make_option_window())
+                               command=lambda: make_option_window(None))
     is_city_name = tk.BooleanVar()
     city_radio = ttk.Radiobutton(root,
                                  text='都市名・建物名',
@@ -135,7 +137,7 @@ def search_clicked(city, entry, root):
 # endregion
 
 # region 条件定義画面
-def make_option_window():
+def make_option_window(shop_list):
     # region rootウィンドウの設定
     root = tk.Tk()
     root.title('検索条件')
@@ -161,7 +163,7 @@ def make_option_window():
                         command=lambda: root.destroy())
     apply = ttk.Button(root,
                        text='適用',
-                       command=lambda: apply_clicked(combo, root))
+                       command=lambda: apply_clicked(combo, root, shop_list))
 
     for num in range(len(combo)):
         combo[num]['values'] = condition_values[num]
@@ -182,15 +184,18 @@ def make_option_window():
     cancel.grid(column=2, row=len(combo_label) + 1, padx=5, pady=5, sticky=tk.S + tk.E)
     apply.grid(column=3, row=len(combo_label) + 1, padx=5, pady=5, sticky=tk.S + tk.E)
 
-    root.mainloop()
+    # root.mainloop()
     # endregion
 
 
-def apply_clicked(combo, root):
+def apply_clicked(combo, root, shop_list):
     for num in range(len(combo)):
         condition[condition_keys[num]] = combo[num].get()
     root.destroy()
 
+    if shop_list is not None:
+        set_display_data()
+        set_shop_list(shop_list)
     # endregion
 
 
@@ -214,7 +219,7 @@ def make_result_window():
     shop_detail = tk.Text(root)
     filter_button = ttk.Button(root,
                                text='フィルター',
-                               command=lambda: filter_clicked(shop_list))
+                               command=lambda: filter_clicked(shop_list, shop_detail))
     image_button = ttk.Button(root,
                               text='サムネイル画像',
                               command=lambda: image_clicked(shop_list))
@@ -251,13 +256,21 @@ def set_display_data():
         for key in condition_keys:
             # もし、条件の値が'指定しない'だったら無視する
             if condition[key] != '指定しない':
-                # もし、条件の値が'指定しない'でない、つまり'居酒屋以外'であるなら
+                # もし、検索条件がgenre_nameだったら、
                 # '居酒屋'がrstに含まれていないかチェックする
                 if key == 'genre_name':
                     flag = not ('居酒屋' in rst['genre_name'])
-                # 検索条件が居酒屋以外なら、'あり', 'なし'がrstに含まれているか
+                # もし、検索条件がcharterだったら、
+                # 貸し切り'不可’であるかどうかを返す
+                elif key == 'charter':
+                    if condition[key] == 'あり' and '不可' in rst['charter']:
+                        flag = False
+                    elif condition[key] == 'なし' and not ('不可' in rst['charter']):
+                        flag = False
+                # 検索条件がそれら以外なら、'あり', 'なし'がrstに含まれているか
                 # チェックする
                 elif not (condition[key] in rst[key]):
+                    print(condition[key] + '...' + rst[key])
                     flag = False
 
         if flag:  # 条件を満たしているならdisplay_dataに追加
@@ -284,14 +297,19 @@ def shop_list_selected(shop_list, detail):
         detail.config(state=tk.DISABLED)
 
 
-def filter_clicked(shop_list):
-    make_option_window()
-    set_display_data()
+def filter_clicked(shop_list, detail):
+    # shop_detailの初期化
+    detail.config(state=tk.NORMAL)
+    detail.delete(index1='1.0', index2=tk.END)
 
+    make_option_window(shop_list)
+
+
+def set_shop_list(shop_list):
     # Listboxの初期化
-    shop_list.delete(first='1.0', last=tk.END)
+    shop_list.delete(first=0, last=tk.END)
     # Listboxへ値の代入
-    for rst in rst_data:
+    for rst in display_data:
         shop_list.insert(tk.END, rst['name'])
 
 
