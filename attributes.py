@@ -63,6 +63,7 @@ def convert_data(res=None):
     r_data['wifi'] = res['wifi']
     r_data['private_room'] = res['private_room']
     r_data['non_smoking'] = res['non_smoking']
+    r_data['parking'] = res['parking']
 
     r_data['catch'] = res['catch']
     r_data['open'] = res['open']
