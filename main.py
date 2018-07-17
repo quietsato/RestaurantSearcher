@@ -38,12 +38,13 @@ def make_search_window():
     city_radio = ttk.Radiobutton(root,
                                  text='都市名・建物名',
                                  variable=is_city_name,
-                                 value=True)
+                                 value=True,
+                                 command=lambda: radio_selected(is_city_name, entry))
     location_radio = ttk.Radiobutton(root,
                                      text='緯度・経度',
                                      variable=is_city_name,
-                                     value=False)
-    is_city_name.set(False)
+                                     value=False,
+                                     command=lambda: radio_selected(is_city_name, entry))
     entry_label = [
         ttk.Label(root, text='緯度'),
         ttk.Label(root, text='経度'),
@@ -55,6 +56,9 @@ def make_search_window():
     search_button = ttk.Button(root,
                                text='検索する',
                                command=lambda: search_clicked(is_city_name.get(), entry, root))
+
+    is_city_name.set(False)
+    entry[2].configure(state='disabled')
     # endregion
 
     # region ウィジェットの配置
@@ -84,6 +88,17 @@ def make_search_window():
 
     root.mainloop()
     # endregion
+
+
+def radio_selected(city_selected, entry):
+    if city_selected.get():
+        entry[0].configure(state='disabled')
+        entry[1].configure(state='disabled')
+        entry[2].configure(state='normal')
+    else:
+        entry[0].configure(state='normal')
+        entry[1].configure(state='normal')
+        entry[2].configure(state='disabled')
 
 
 def search_clicked(city, entry, root):
@@ -218,8 +233,8 @@ def make_result_window():
     shop_list = tk.Listbox(root)
     shop_detail = tk.Text(root)
     back_button = ttk.Button(root,
-                            text='戻る',
-                            command=lambda: back_clicked(root))
+                             text='戻る',
+                             command=lambda: back_clicked(root))
     filter_button = ttk.Button(root,
                                text='フィルター',
                                command=lambda: filter_clicked(shop_list, shop_detail))
