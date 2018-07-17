@@ -217,6 +217,9 @@ def make_result_window():
     # region ウィジェットの定義
     shop_list = tk.Listbox(root)
     shop_detail = tk.Text(root)
+    back_button = ttk.Button(root,
+                            text='戻る',
+                            command=lambda: back_clicked(root))
     filter_button = ttk.Button(root,
                                text='フィルター',
                                command=lambda: filter_clicked(shop_list, shop_detail))
@@ -239,6 +242,7 @@ def make_result_window():
     # region ウィジェットの配置
     shop_list.grid(column=0, columnspan=2, row=0, rowspan=2, padx=5, pady=5, sticky=tk.N + tk.S + tk.W + tk.E)
     shop_detail.grid(column=3, columnspan=3, row=1, padx=5, pady=5, sticky=tk.N + tk.S + tk.W + tk.E)
+    back_button.grid(column=0, row=2, padx=5, pady=5, sticky=tk.W + tk.S)
     filter_button.grid(column=0, row=2, padx=5, pady=5, sticky=tk.W + tk.S)
     image_button.grid(column=3, row=2, padx=5, pady=5, sticky=tk.E + tk.S)
     web_button.grid(column=4, row=2, padx=5, pady=5, sticky=tk.E + tk.S)
@@ -270,7 +274,6 @@ def set_display_data():
                 # 検索条件がそれら以外なら、'あり', 'なし'がrstに含まれているか
                 # チェックする
                 elif not (condition[key] in rst[key]):
-                    print(condition[key] + '...' + rst[key])
                     flag = False
 
         if flag:  # 条件を満たしているならdisplay_dataに追加
@@ -295,6 +298,11 @@ def shop_list_selected(shop_list, detail):
                           display_data_index[i] + ' : '
                           + display_data[index][display_data_keys[i]] + '\n')
         detail.config(state=tk.DISABLED)
+
+
+def back_clicked(root):
+    root.destroy()
+    make_search_window()
 
 
 def filter_clicked(shop_list, detail):
