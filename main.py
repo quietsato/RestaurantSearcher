@@ -243,7 +243,7 @@ def make_result_window():
     shop_list.grid(column=0, columnspan=2, row=0, rowspan=2, padx=5, pady=5, sticky=tk.N + tk.S + tk.W + tk.E)
     shop_detail.grid(column=3, columnspan=3, row=1, padx=5, pady=5, sticky=tk.N + tk.S + tk.W + tk.E)
     back_button.grid(column=0, row=2, padx=5, pady=5, sticky=tk.W + tk.S)
-    filter_button.grid(column=, row=2, padx=5, pady=5, sticky=tk.W + tk.S)
+    filter_button.grid(column=1, row=2, padx=5, pady=5, sticky=tk.W + tk.S)
     image_button.grid(column=3, row=2, padx=5, pady=5, sticky=tk.E + tk.S)
     web_button.grid(column=4, row=2, padx=5, pady=5, sticky=tk.E + tk.S)
     google.grid(column=5, row=2, padx=5, pady=5, sticky=tk.E + tk.S)
