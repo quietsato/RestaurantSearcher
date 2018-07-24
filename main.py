@@ -13,9 +13,9 @@ from attributes import *
 from keys import *
 from urls import *
 
-condition = get_condition()
-rst_data = []
-display_data = []
+condition = get_condition()  # 検索条件
+rst_data = []  # 位置情報のみで検索したレストランデータ
+display_data = []  # 検索条件によって絞り込まれたデータ
 
 
 # region 検索画面
@@ -91,16 +91,19 @@ def make_search_window():
 
 
 def option_button_clicked(button):
+    # 呼び出しもとのボタンを多重起動を防ぐために無効化
     button.config(state=tk.DISABLED)
     return make_option_window([None, button])
 
 
 def radio_selected(city_selected, entry):
     if city_selected.get():
+        # 都市名入力欄を有効化
         entry[0].configure(state='disabled')
         entry[1].configure(state='disabled')
         entry[2].configure(state='normal')
     else:
+        # 緯度・経度入力欄を有効化
         entry[0].configure(state='normal')
         entry[1].configure(state='normal')
         entry[2].configure(state='disabled')
@@ -148,6 +151,7 @@ def search_clicked(city, entry, root):
                          '異なる地点を指定するか、入力値の精度を上げてみてください')
         return
 
+    # アクセスしやすいようにグローバル変数に位置検索結果を保持する
     global rst_data
     rst_data = [convert_data(rst) for rst in res['results']['shop']]
     root.destroy()
@@ -211,6 +215,7 @@ def make_option_window(widgets):
 
 
 def on_close(root, widgets):
+    # 呼び出し元のボタンを再度有効化する
     widgets[1].config(state=tk.NORMAL)
     root.destroy()
 
@@ -219,6 +224,7 @@ def apply_clicked(combo, root, widgets):
     for num in range(len(combo)):
         condition[condition_keys[num]] = combo[num].get()
 
+    # shop_listが格納されている（呼び出し元が結果ウィンドウ）の場合
     if widgets[0] is not None:
         set_display_data()
         set_shop_list(widgets[0])
@@ -309,6 +315,14 @@ def set_display_data():
     # endregion
 
 
+def set_shop_list(shop_list):
+    # Listboxの初期化
+    shop_list.delete(first=0, last=tk.END)
+    # Listboxへ値の代入
+    for rst in display_data:
+        shop_list.insert(tk.END, rst['name'])
+
+
 def shop_list_selected(shop_list, detail):
     try:
         index = shop_list.curselection()[0]
@@ -333,20 +347,13 @@ def back_clicked(root):
 
 
 def filter_clicked(shop_list, detail, button):
+    # 呼び出し元のボタンを多重起動を防ぐために無効化
     button.config(state=tk.DISABLED)
     # shop_detailの初期化
     detail.config(state=tk.NORMAL)
     detail.delete(index1='1.0', index2=tk.END)
 
     make_option_window([shop_list, button])
-
-
-def set_shop_list(shop_list):
-    # Listboxの初期化
-    shop_list.delete(first=0, last=tk.END)
-    # Listboxへ値の代入
-    for rst in display_data:
-        shop_list.insert(tk.END, rst['name'])
 
 
 def image_clicked(shop_list):
