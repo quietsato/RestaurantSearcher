@@ -33,7 +33,7 @@ def make_search_window():
                           text='検索条件：')
     option_button = ttk.Button(root,
                                text='詳細検索',
-                               command=lambda: make_option_window(None))
+                               command=lambda: option_button_clicked(option_button))
     is_city_name = tk.BooleanVar()
     city_radio = ttk.Radiobutton(root,
                                  text='都市名・建物名',
@@ -88,6 +88,11 @@ def make_search_window():
 
     root.mainloop()
     # endregion
+
+
+def option_button_clicked(button):
+    button.config(state=tk.DISABLED)
+    return make_option_window([None, button])
 
 
 def radio_selected(city_selected, entry):
@@ -186,9 +191,7 @@ def make_option_window(widgets):
         # コンボボックスの初期値をconditionを読み込んで指定
         combo[num].current(newindex=(condition_values[num].index(current_value)))
 
-    # もしwidgetsがNoneでなければ、ウィンドウを閉じたときにボタンを有効化する
-    if widgets is not None:
-        root.protocol("WM_DELETE_WINDOW", lambda: on_close(root, widgets))
+    root.protocol("WM_DELETE_WINDOW", lambda: on_close(root, widgets))
 
     # endregion
 
@@ -208,8 +211,7 @@ def make_option_window(widgets):
 
 
 def on_close(root, widgets):
-    if widgets is not None:
-        widgets[1].config(state=tk.NORMAL)
+    widgets[1].config(state=tk.NORMAL)
     root.destroy()
 
 
@@ -217,7 +219,7 @@ def apply_clicked(combo, root, widgets):
     for num in range(len(combo)):
         condition[condition_keys[num]] = combo[num].get()
 
-    if widgets is not None:
+    if widgets[0] is not None:
         set_display_data()
         set_shop_list(widgets[0])
     # endregion
