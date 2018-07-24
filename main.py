@@ -152,7 +152,7 @@ def search_clicked(city, entry, root):
 # endregion
 
 # region 条件定義画面
-def make_option_window(shop_list):
+def make_option_window(widgets):
     # region rootウィンドウの設定
     root = tk.Tk()
     root.title('検索条件')
@@ -175,17 +175,21 @@ def make_option_window(shop_list):
         combo.append(ttk.Combobox(root, state='readonly'))
     cancel = ttk.Button(root,
                         text='キャンセル',
-                        command=lambda: root.destroy())
+                        command=lambda: on_close(root, widgets))
     apply = ttk.Button(root,
                        text='適用',
-                       command=lambda: apply_clicked(combo, root, shop_list))
+                       command=lambda: apply_clicked(combo, root, widgets))
 
     for num in range(len(combo)):
         combo[num]['values'] = condition_values[num]
         current_value = condition[condition_keys[num]]
         # コンボボックスの初期値をconditionを読み込んで指定
         combo[num].current(newindex=(condition_values[num].index(current_value)))
-        pass
+
+    # もしwidgetsがNoneでなければ、ウィンドウを閉じたときにボタンを有効化する
+    if widgets is not None:
+        root.protocol("WM_DELETE_WINDOW", lambda: on_close(root, widgets))
+
     # endregion
 
     # region ウィジェットの配置
@@ -199,19 +203,25 @@ def make_option_window(shop_list):
     cancel.grid(column=2, row=len(combo_label) + 1, padx=5, pady=5, sticky=tk.S + tk.E)
     apply.grid(column=3, row=len(combo_label) + 1, padx=5, pady=5, sticky=tk.S + tk.E)
 
-    # root.mainloop()
+    root.mainloop()
     # endregion
 
 
-def apply_clicked(combo, root, shop_list):
-    for num in range(len(combo)):
-        condition[condition_keys[num]] = combo[num].get()
+def on_close(root, widgets):
+    if widgets is not None:
+        widgets[1].config(state=tk.NORMAL)
     root.destroy()
 
-    if shop_list is not None:
+
+def apply_clicked(combo, root, widgets):
+    for num in range(len(combo)):
+        condition[condition_keys[num]] = combo[num].get()
+
+    if widgets is not None:
         set_display_data()
-        set_shop_list(shop_list)
+        set_shop_list(widgets[0])
     # endregion
+    on_close(root, widgets)
 
 
 # endregion
@@ -237,7 +247,7 @@ def make_result_window():
                              command=lambda: back_clicked(root))
     filter_button = ttk.Button(root,
                                text='フィルター',
-                               command=lambda: filter_clicked(shop_list, shop_detail))
+                               command=lambda: filter_clicked(shop_list, shop_detail, filter_button))
     image_button = ttk.Button(root,
                               text='サムネイル画像',
                               command=lambda: image_clicked(shop_list))
@@ -320,12 +330,13 @@ def back_clicked(root):
     make_search_window()
 
 
-def filter_clicked(shop_list, detail):
+def filter_clicked(shop_list, detail, button):
+    button.config(state=tk.DISABLED)
     # shop_detailの初期化
     detail.config(state=tk.NORMAL)
     detail.delete(index1='1.0', index2=tk.END)
 
-    make_option_window(shop_list)
+    make_option_window([shop_list, button])
 
 
 def set_shop_list(shop_list):
