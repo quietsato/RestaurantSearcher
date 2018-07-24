@@ -387,5 +387,6 @@ def google_search_clicked(shop_list):
 
 # endregion
 
-
-make_search_window()
+# プログラムの開始位置
+if __name__ == '__main__':
+    make_search_window()
